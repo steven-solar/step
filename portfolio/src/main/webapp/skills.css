@@ -1,0 +1,46 @@
+.container {
+  margin-bottom: 25px;
+}
+
+.skill-title {
+  padding-top: 30px;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 48px;
+  font-family: "Avenir Next";
+}
+.description {
+  font-size: 24px;
+  font-style: italic;
+  font-family: "Avenir Next";
+}
+
+.skill-category {
+  padding-top: 30px;
+  padding-bottom: 10px;
+  font-size: medium;
+  font-family: "Avenir Next";
+}
+
+.skill-list {
+  display: "flex";
+  flex-wrap: "wrap";
+  justify-content: "center";
+}
+
+.skill-item {
+  white-space: nowrap;
+  display: inline;
+  background-color: #eee;
+  border-radius: 4px;
+  margin-left: .25rem;
+  margin-right: .25rem;
+  margin-bottom: .6rem;
+  padding-left: .55rem;
+  padding-right: .55rem;
+  color: #4a4a4a;
+  font-size: .75rem;
+  justify-content: center;
+  box-shadow: 0 1px 1px rgba(0,0,0,.12), 0 1px 1px rgba(0,0,0,.24);
+}
+  

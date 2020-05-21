@@ -1,31 +1,22 @@
-#content {
-  margin-left: auto;
-  margin-right: auto;
-  width: 650px;
-}
-
-#greeting-container {
-  margin-top: 20px;
-}
+$font: "Avenir Next";
 
 .name {
   padding-top: 50px;
   text-transform: uppercase;
   font-weight: 600;
   font-size: 48px;
-  font-family: "Avenir Next";
+  font-family: $font;
 }
 
 .tag-line {
   font-size: 24px;
   font-style: italic;
-  font-family: "Avenir Next";
+  font-family: $font;
 }
 
 .icon-list {
   list-style: none;
   align-items: center;
-  margin-left: -40px;
 }
 
 .icon {
@@ -34,18 +25,19 @@
   white-space: nowrap;
   padding-top: 25px;
   margin-right: 20px;
+} :first {
+  margin-right: 0px;
 }
-
 
 .exp {
   padding-top: 25px;
   font-size: 24px;
-  font-family: "Avenir Next";
+  font-family: $font;
   padding-top: 40px;
   padding-bottom: 20px;
 }
 
-.imgs {
+.icons {
   height: 75px;
 }
 
@@ -80,7 +72,10 @@
     font-size: 18px;
   }
 }
-
+.logos {
+  height: 125;
+  width: 125;
+}
 .exp-container {
   display: flex;
   flex-wrap: wrap;
@@ -100,7 +95,7 @@
 }
 
 .content {
-  font-family: "Avenir Next";
+  font-family: $font;
   opacity: 0;
   font-size: 14px;
   position: absolute;
@@ -131,7 +126,7 @@
 .exp-box .content .text .company {
   color :white !important;
   opacity: 1;
-  font-family: "Avenir Next";
+  font-family: $font;
   font-size: 18px;
   padding-top: 25%;
   padding-left: 5%;
@@ -141,7 +136,7 @@
 .exp-box .content .text .title {
   color :white !important;
   opacity: 1;
-  font-family: "Avenir Next";
+  font-family: $font;
   font-size: 14px;
   padding-left: 5%;
   padding-right: 5%;

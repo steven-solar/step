@@ -1,9 +1,143 @@
-#content {
-  margin-left: auto;
-  margin-right: auto;
-  width: 650px;
+.font {
+    font-family: Arial, Helvetica, sans-serif;
+}
+.name {
+  padding-top: 50px;
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 48px;
 }
 
-#greeting-container {
-  margin-top: 20px;
+.tag-line {
+  font-size: 24px;
+  font-style: italic;
+}
+
+.icon-list {
+  list-style: none;
+  align-items: center;
+}
+
+.icon {
+  display: inline-block;
+  text-overflow: show;
+  white-space: nowrap;
+  padding-top: 25px;
+  margin-right: 20px;
+} :first {
+  margin-right: 0px;
+}
+
+.exp {
+  padding-top: 25px;
+  font-size: 24px;
+  padding-top: 40px;
+  padding-bottom: 20px;
+}
+
+img {
+  height: 125px;
+  width: 125px;
+}
+
+@media only screen and (max-width: 400px) {
+  img {
+    height: 75px;
+  }
+  .name {
+    font-size: 34px;
+  }
+  .descrip {
+    font-size: 16px;
+  }
+  .exp {
+    font-size: 20px;
+  }
+}
+@media only screen and (min-width:400px) and (max-width: 600px) {
+  .name {
+    font-size: 34px;
+  }
+  .descrip {
+    font-size: 16px;
+  }
+  .exp {
+    font-size: 24px;
+  }
+}
+
+@media only screen and (min-width: 600px) and (max-width: 720px) {
+  .descrip {
+    font-size: 18px;
+  }
+}
+
+.exp-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.exp-box {
+  position: relative;
+  padding: 0;
+  width: 125px;
+  height: 125px;
+  display: block;
+  cursor: pointer;
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 1px 2px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24);
+}
+
+.content {
+  opacity: 0;
+  font-size: 14px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  color :white;
+  background-color: purple;
+  width: 125px;
+  height: 125px;
+  -webkit-transition: all 400ms ease-out;
+  -moz-transition: all 400ms ease-out;
+  -o-transition: all 400ms ease-out;
+  -ms-transition: all 400ms ease-out;
+  transition: all 400ms ease-out;
+  text-align: center;
+}
+
+.exp-box .content:hover { opacity: 0.85; }   
+
+.exp-box .content .text {
+  color :white;
+  height: 0;
+  opacity: 1;
+  transition-delay: 0s;
+  transition-duration: 0.4s;
+}
+
+.exp-box .content .text .company {
+  color :white;
+  opacity: 1;
+  font-size: 20px;
+  padding-top: 25%;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.exp-box .content .text .title {
+  color :white;
+  opacity: 1;
+  font-size: 14px;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.exp-box .content:hover .text {
+  color :white;
+  opacity: 1;
+  transform: translateY(-5px);
+  -webkit-transform: translateY(-5px);
 }

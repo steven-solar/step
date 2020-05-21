@@ -4,15 +4,82 @@
     <meta charset="UTF-8">
     <title>My Portfolio</title>
     <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
   </head>
   <body>
-    <div id="content">
-      <h1>My Portfolio</h1>
-      <p>This is my portfolio.</p>
-      <p>Click here to get a random message:</p>
-      <button onclick="addRandomGreeting()">Hello</button>
-      <div id="greeting-container"></div>
-    </div>
+    <div class="text-center font"> 
+      <div class="name col-md-auto"> Steven&nbsp;Solar </div>
+      <div class="tag-line col-md-auto"> &lt;developer, engineer, enthusiast &#47;&gt; </div>
+        <ul class="icon-list">
+          <li class="icon">
+            <a href="https://github.com/steven-solar" target="_blank" rel="noopener noreferrer"> <img src="/images/github.png" /> </a>
+          </li>
+          <li class="icon">
+            <a href="https://www.linkedin.com/in/steven-solar" target="_blank" rel="noopener noreferrer"> <img src="/images/linkedin.png" /> </a>
+          </li>
+        </ul>
+      <div class="exp"> Experience </div>
+      <div class="exp-container">  
+        <div class="exp-box">
+          <a href="https://about.google/" target="_blank" rel="noopener noreferrer">
+            <img src="/images/google.jpg" alt="Google Logo" />
+            <div class="content">
+              <div class="text">
+                <h4 class="company"> Google </h4>
+                  <h6 class="title"> STEP Intern </h6>
+              </div>
+            </div>
+          </a>
+        </div> 
+        <div class="exp-box">
+          <a href="http://treye.tech/" target="_blank" rel="noopener noreferrer">
+            <img src="/images/tech.png" alt="Treyetech Logo" />
+            <div class="content">
+              <div class="text">
+                <h4 class="company"> Treyetech </h4>
+                <h6 class="title"> Team Lead / Director of Operations </h6>
+              </div>
+            </div>
+          </a>
+        </div>   
+        <div class="exp-box">
+          <a href="https://www.sokat.co/" target="_blank" rel="noopener noreferrer">
+            <img src="/images/sokat.png" alt="SoKat Logo" />
+            <div class="content">
+              <div class="text">
+                <h4 class="company"> SoKat.co </h4>
+                <h6 class="title"> Machine Learning Engineer Intern </h6>
+              </div>
+            </div>
+          </a>
+        </div> 
+        <div class="exp-box">
+          <a href="https://semester.ly/" target="_blank" rel="noopener noreferrer">
+            <img src="/images/semly.png" alt="Semester.ly Logo" />
+            <div class="content">
+              <div class="text">
+                <h4 class="company"> Semester.ly </h4>
+                <h6 class="title"> Software Engineer Intern </h6>
+              </div>
+            </div>
+          </a>
+        </div> 
+        <div class="exp-box">
+          <a href="https://www.mskcc.org/" target="_blank" rel="noopener noreferrer">
+            <img src="/images/msk.jpg" alt="MSKCC Logo" />
+              <div class="content">
+                <div class="text">
+                  <h4 class="company"> Memorial Sloan </h4>
+                  <h6 class="title"> Research Assistant Intern </h6>
+                </div>
+              </div>
+          </a>
+        </div> 
+      </div>
+    </div>   
   </body>
 </html>

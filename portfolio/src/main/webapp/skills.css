@@ -1,3 +1,7 @@
+.font {
+  font-family: Arial;
+}
+
 .container {
   margin-bottom: 25px;
 }
@@ -7,28 +11,26 @@
   text-transform: uppercase;
   font-weight: 600;
   font-size: 48px;
-  font-family: "Avenir Next";
 }
+
 .description {
   font-size: 24px;
   font-style: italic;
-  font-family: "Avenir Next";
 }
 
 .skill-category {
   padding-top: 30px;
   padding-bottom: 10px;
-  font-size: medium;
-  font-family: "Avenir Next";
+  font-size: 18px;
 }
 
 .skill-list {
-  display: "flex";
-  flex-wrap: "wrap";
-  justify-content: "center";
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.skill-item {
+span {
   white-space: nowrap;
   display: inline;
   background-color: #eee;
@@ -39,7 +41,7 @@
   padding-left: .55rem;
   padding-right: .55rem;
   color: #4a4a4a;
-  font-size: .75rem;
+  font-size: 14px;
   justify-content: center;
   box-shadow: 0 1px 1px rgba(0,0,0,.12), 0 1px 1px rgba(0,0,0,.24);
 }

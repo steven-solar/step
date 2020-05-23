@@ -1,0 +1,19 @@
+.font {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.abt-title {
+  padding-top: 30px;
+  font-weight: 600;
+  font-size: 48px;
+}
+
+.abt-content {
+  margin-left: 20%;
+  margin-right: 20%;
+  padding-top: 10px;
+  font-size: 20px;
+  font-family: 'Dosis-Regular';
+} p {
+    margin-top: 20px;
+}

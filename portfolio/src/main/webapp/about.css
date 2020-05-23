@@ -11,9 +11,15 @@
 .abt-content {
   margin-left: 20%;
   margin-right: 20%;
-  padding-top: 10px;
   font-size: 20px;
-  font-family: 'Dosis-Regular';
-} p {
+  text-align: center;
+} div {
     margin-top: 20px;
+} p {
+    margin-top: 5px;
+    font-size: 16px;
+}
+
+img {
+    padding-top: 15px;
 }

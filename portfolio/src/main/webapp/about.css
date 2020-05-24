@@ -30,3 +30,7 @@ img {
 } a img {
     margin-right: 20px;
 } 
+
+.last {
+    margin-bottom: 30px;
+}

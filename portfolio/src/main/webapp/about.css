@@ -23,3 +23,10 @@
 img {
     padding-top: 15px;
 }
+
+.flex {
+    display: flex;
+    justify-content: center;
+} a img {
+    margin-right: 20px;
+} 

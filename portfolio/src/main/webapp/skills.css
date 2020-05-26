@@ -8,6 +8,8 @@
 
 .link {
     color: white;
+} :hover {
+    color: black;
 }
 
 .skill-title {

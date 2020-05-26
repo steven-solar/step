@@ -1,0 +1,37 @@
+.font {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.title {
+  margin-top: 50px;
+  font-weight: 600;
+  font-size: 48px;
+}
+
+.tag-line {
+  font-size: 24px;
+  font-style: italic;
+}
+
+.proj-title {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  font-size: 24px;
+}
+
+.flex {
+  margin-top: 35px;
+}
+
+.proj-description {
+  font-size: 16px;
+}
+
+img {
+  margin-left: 6%;
+}
+
+.link {
+    margin-top: 10px;
+}

@@ -6,6 +6,10 @@
   margin-bottom: 25px;
 }
 
+.link {
+    color: white;
+}
+
 .skill-title {
   padding-top: 30px;
   text-transform: uppercase;

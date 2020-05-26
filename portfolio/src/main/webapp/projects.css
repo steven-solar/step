@@ -2,6 +2,10 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.holder {
+    margin-bottom: 50px;
+}
+
 .title {
   margin-top: 50px;
   font-weight: 600;
@@ -10,6 +14,7 @@
 
 .tag-line {
   font-size: 24px;
+  margin-bottom: 15px;
   font-style: italic;
 }
 
@@ -34,4 +39,24 @@ img {
 
 .link {
     margin-top: 10px;
+}
+
+@media only screen and (max-width: 500px) {
+  img {
+    margin-left: 1%;
+  }
+  .title {
+      font-size: 28px;
+  }
+  .tag-line {
+      font-size: 16px;
+  }
+  .proj-title {
+    margin-bottom: 10px;
+  }
+  .proj-description {
+      margin-left: 3%;
+      margin-right: 7%;
+      font-size: 14px;
+  }
 }

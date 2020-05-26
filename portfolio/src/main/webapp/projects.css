@@ -6,6 +6,12 @@
     margin-bottom: 50px;
 }
 
+.navbar-link {
+    color: white;
+} :hover {
+    color: black;
+}
+
 .title {
   margin-top: 50px;
   font-weight: 600;

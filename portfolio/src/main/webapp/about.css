@@ -3,11 +3,11 @@
 }
 
 .link {
-    color: white;
+  color: white;
 } 
 
 link:hover {
-    color: black;
+  color: black;
 }
 
 .abt-title {
@@ -24,25 +24,27 @@ link:hover {
 } 
 
 .abt-content div {
-    margin-top: 20px;
+  margin-top: 20px;
 } 
 
 .abt-content p {
-    margin-top: 5px;
-    font-size: 16px;
+  margin-top: 5px;
+  font-size: 16px;
 }
 
 img {
-    padding-top: 15px;
+  padding-top: 15px;
 }
 
 .flex {
-    display: flex;
-    justify-content: center;
-} a img {
-    margin-right: 20px;
+  display: flex;
+  justify-content: center;
+} 
+
+.flex a img {
+  margin-right: 20px;
 } 
 
 .last {
-    margin-bottom: 30px;
+  margin-bottom: 30px;
 }

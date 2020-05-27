@@ -48,15 +48,15 @@ img {
 }
 
 @media only screen and (max-width: 500px) {
-    .abt-content {
-      font-size: 16px;
-    }
-    .abt-content p {
-      font-size: 12px;
-    }
-    .abt-title {
-      font-size: 30px;
-    }
+  .abt-content {
+    font-size: 16px;
+  }
+  .abt-content p {
+    font-size: 12px;
+  }
+  .abt-title {
+    font-size: 30px;
+  }
 }
 @media only screen and (min-width: 500px) {
   img {

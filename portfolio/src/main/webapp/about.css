@@ -11,14 +11,13 @@ link:hover {
 }
 
 .abt-title {
-  padding-top: 30px;
   font-weight: 600;
   font-size: 48px;
 }
 
 .abt-content {
-  margin-left: 20%;
-  margin-right: 20%;
+  margin-left: 5%;
+  margin-right: 5%;
   font-size: 20px;
   text-align: center;
 } 
@@ -33,6 +32,7 @@ link:hover {
 }
 
 img {
+  width: 100%;
   padding-top: 15px;
 }
 
@@ -41,10 +41,24 @@ img {
   justify-content: center;
 } 
 
-.flex a img {
-  margin-right: 20px;
-} 
-
 .last {
   margin-bottom: 30px;
+}
+@media only screen and (max-width: 500px) {
+    .abt-content {
+      font-size: 16px;
+    }
+    .abt-content p {
+      font-size: 12px;
+    }
+    .abt-title {
+      font-size: 30px;
+    }
+}
+@media only screen and (min-width: 500px) {
+  img {
+    width: 60%;
+    margin-left: 20%;
+    margin-right: 20%;
+  }
 }

@@ -7,19 +7,21 @@
 }
 
 .link {
-    color: white;
-} :hover {
-    color: black;
+  color: white;
+} 
+
+.link:hover {
+  color: black;
 }
 
-.skill-title {
-  padding-top: 30px;
+.title {
+  padding-top: 10px;
   text-transform: uppercase;
   font-weight: 600;
   font-size: 48px;
 }
 
-.description {
+.tag-line {
   font-size: 24px;
   font-style: italic;
 }
@@ -36,7 +38,7 @@
   justify-content: center;
 }
 
-span {
+.skill-list span {
   white-space: nowrap;
   display: inline;
   background-color: #eee;
@@ -52,32 +54,14 @@ span {
   box-shadow: 0 1px 1px rgba(0,0,0,.12), 0 1px 1px rgba(0,0,0,.24);
 }
   
-
-@media only screen and (max-width: 400px) {
-  .skill-title {
-    font-size: 34px;
+@media only screen and (max-width: 500px) {
+  .title {
+    font-size: 28px;
   }
-  .description {
-    font-size: 18px;
-  }
-  .skill-category {
-    font-size: 14px;
-  }
-  span {
-    font-size: 10px;
-  }
-}
-@media only screen and (min-width:400px) and (max-width: 600px) {
-  .skill-title {
-    font-size: 40px;
-  }
-  .description {
-    font-size: 20px;
+  .tag-line {
+    font-size: 16px;
   }
   .skill-category {
     font-size: 16px;
   }
-  span {
-    font-size: 12px;
-  }
-}
+} 

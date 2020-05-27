@@ -43,11 +43,11 @@
   display: inline;
   background-color: #eee;
   border-radius: 4px;
-  margin-left: .25rem;
-  margin-right: .25rem;
-  margin-bottom: .6rem;
-  padding-left: .55rem;
-  padding-right: .55rem;
+  margin-left: 3px;
+  margin-right: 3px;
+  margin-bottom: 10px;
+  padding-left: 8px;
+  padding-right: 8px;
   color: #4a4a4a;
   font-size: 14px;
   justify-content: center;

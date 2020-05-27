@@ -33,7 +33,8 @@ link:hover {
 }
 
 img {
-  width: 100%;
+  max-width: 100%;
+  height: auto;
   padding-top: 15px;
 }
 
@@ -45,6 +46,7 @@ img {
 .last {
   margin-bottom: 30px;
 }
+
 @media only screen and (max-width: 500px) {
     .abt-content {
       font-size: 16px;

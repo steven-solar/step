@@ -17,6 +17,7 @@
 }
 
 .title {
+  padding-top: 10px;
   font-weight: 600;
   font-size: 48px;
 }
@@ -39,7 +40,7 @@
 }
 
 .proj-description {
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .link {

@@ -13,13 +13,14 @@
 // limitations under the License.
 
 /**
- * Adds a random greeting to the page.
+ * Gets comments for the page.
  */
 function getComments() {
     fetch("/data").then(response => response.json()).then((comments) => {
       const commElem = document.getElementById('comments-container');
       commElem.innerHtml = '';
       comments.forEach(c => {
+          console.log(c);
           var li = document.createElement("li");
           li.innerText = c;
           commElem.appendChild(li);

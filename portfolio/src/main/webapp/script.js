@@ -20,9 +20,8 @@ function getComments() {
       const commElem = document.getElementById('comments-container');
       commElem.innerHtml = '';
       comments.forEach(c => {
-          console.log(c);
           var li = document.createElement("li");
-          li.innerText = c;
+          li.innerText = c.name + ": " + c.text;
           commElem.appendChild(li);
       });
     });  

@@ -34,12 +34,14 @@
 }
 
 .skill-list {
+  list-style: none;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  padding-inline-start: 0px;
 }
 
-.skill-list span {
+.skill-list li {
   white-space: nowrap;
   display: inline;
   background-color: #eee;

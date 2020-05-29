@@ -19,10 +19,41 @@ function getComments() {
     fetch("/data").then(response => response.json()).then((comments) => {
       const commElem = document.getElementById('comments-container');
       commElem.innerHtml = '';
+      
       comments.forEach(c => {
-          var li = document.createElement("li");
-          li.innerText = c.name + ": " + c.text;
-          commElem.appendChild(li);
+          var d = document.createElement("div");
+          d.innerHTML = "<div class='comment-name'>" + c.name + "</div>" + 
+                        "<div class='comment-text'>" + c.text + "</div>" +
+                        "<div class='comment-time'>" + getTimeStamp(c) + "</div>";
+          d.classList.add("comment");
+          commElem.appendChild(d);
       });
     });  
+}
+
+function getTimeStamp(comment) {
+  var time = ((new Date()).getTime() - comment.timestamp)/1000; 
+  var seconds = (time).toFixed(0);
+  var minutes = (time/60).toFixed(0);
+  var hours = (time/(60*60)).toFixed(0);
+  var days = (time/(60*60*24)).toFixed(0);
+  var years = (time/(60*60*24*365)).toFixed(0);
+  if (seconds < 1) {
+    return "just now";
+  }
+  if (seconds < 60) {
+    return seconds === 1 ? seconds + " second ago" : seconds + " seconds ago";
+  }
+  else if (minutes < 60) {
+    return minutes === 1 ? minutes + " second ago" : minutes + " minutes ago";
+  }
+  else if (hours < 24) {
+    return hours === 1 ? hours + " second ago" : hours + " hours ago";
+  }
+  else if (days < 365) {
+    return days === 1 ? days + " second ago" : days + " days ago";
+  }
+  else {
+    return years === 1 ? years + " second ago" : years + " years ago";
+  }
 }

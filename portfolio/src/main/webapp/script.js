@@ -16,18 +16,19 @@
  * Gets comments for the page.
  */
 function getComments() {
-    fetch("/data").then(response => response.json()).then((comments) => {
+    const commElem = document.getElementById('comments-container');
+    commElem.innerHTML = "";
+    var number = document.getElementById("number").value;
+    fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
       const commElem = document.getElementById('comments-container');
-      commElem.innerHtml = '';
        comments.forEach(c => {
-          console.log(c.text);
           var d = document.createElement("div");
           d.innerHTML = "<div class='comment-text'>" + c.text + "</div>";
           d.classList.add("box");
           commElem.appendChild(d);
           var d2 = document.createElement("div");
           d2.innerHTML = "<span class='comment-name'>" + c.name + "</span>" + 
-                        "<span class='comment-time'>" + ", " + getTimeStamp(c) + "</span>";
+                        "<span class='comment-time'>" getTimeStamp(c) + "</span>";
           d2.classList.add("comment-info");
           commElem.appendChild(d2);
       });

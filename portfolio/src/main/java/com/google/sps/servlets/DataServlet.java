@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -39,9 +40,27 @@ public class DataServlet extends HttpServlet {
     Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     PreparedQuery results = datastore.prepare(query);
-
+    String sNumber = request.getParameter("number");
+    int num = 0;
+    if (sNumber.length() > 0) {
+      try {
+        num = Integer.parseInt(sNumber);
+      }
+      catch (NumberFormatException e) {
+        System.out.println(e);
+        response.sendRedirect("/");
+        return;
+      }
+    }
+    if (num < 0) {
+        System.out.println("Enter a positive number.");
+        response.sendRedirect("/");
+        return;
+    }
+    
+    List<Entity> entities = results.asList(FetchOptions.Builder.withLimit(num));
     List<Comment> comments = new ArrayList<>();
-    for(Entity e : results.asIterable()) {
+    for(Entity e : entities) {
       long id = e.getKey().getId();
       String name = (String) e.getProperty("name");
       String text = (String) e.getProperty("text");

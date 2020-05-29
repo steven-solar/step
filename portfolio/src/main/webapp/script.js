@@ -16,23 +16,35 @@
  * Gets comments for the page.
  */
 function getComments() {
+  const commElem = document.getElementById('comments-container');
+  commElem.innerHTML = "";
+  var number = document.getElementById("number").value;
+  fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
     const commElem = document.getElementById('comments-container');
-    commElem.innerHTML = "";
-    var number = document.getElementById("number").value;
-    fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
-      const commElem = document.getElementById('comments-container');
-       comments.forEach(c => {
-          var d = document.createElement("div");
-          d.innerHTML = "<div class='comment-text'>" + c.text + "</div>";
-          d.classList.add("box");
-          commElem.appendChild(d);
-          var d2 = document.createElement("div");
-          d2.innerHTML = "<span class='comment-name'>" + c.name + "</span>" + 
-                        "<span class='comment-time'>" getTimeStamp(c) + "</span>";
-          d2.classList.add("comment-info");
-          commElem.appendChild(d2);
-      });
-    });  
+     comments.forEach(c => {
+        var d = document.createElement("div");
+        d.innerHTML = "<div class='comment-text'>" + c.text + "</div>";
+        d.classList.add("box");
+        commElem.appendChild(d);
+        var d2 = document.createElement("div");
+        d2.innerHTML = "<span class='comment-name'>" + c.name + "</span>" + 
+                      "<span class='comment-time'>" + getTimeStamp(c) + "</span>";
+        d2.classList.add("comment-info");
+        commElem.appendChild(d2);
+    });
+  });  
+}
+
+function postComment() {
+  var number = document.getElementById("number").value;
+  fetch("data", {method: "POST"});
+  window.location.reload();
+  document.getElementById("number").value = number;
+}
+
+function deleteComments() {
+  fetch("delete-data", {method: "POST"});
+  window.location.reload();
 }
 
 function getTimeStamp(comment) {

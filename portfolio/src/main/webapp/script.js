@@ -35,13 +35,6 @@ function getComments() {
   });  
 }
 
-function postComment() {
-  var number = document.getElementById("number").value;
-  fetch("data", {method: "POST"});
-  window.location.reload();
-  document.getElementById("number").value = number;
-}
-
 function deleteComments() {
   fetch("delete-data", {method: "POST"});
   window.location.reload();

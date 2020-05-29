@@ -98,13 +98,17 @@
         </div> 
       </div>
     </div>
-    <div id="comments-container"> </div>  
-    <form action="/data" method="post">
-      <label for="name">Name:</label><br>
-      <input type="text" id="name" name="name"><br>
-      <label for="comment">Comment:</label><br>
-      <input type="text" id="text" name="text"><br>
-      <input type="submit" value="Submit">
-    </form> 
+    <div class="comments-title"> Check out people's comments! </div>
+    <div class="comments-container">
+      <div id="comments-container"> </div>  
+      <div class="comments-title"> Leave your thoughts! </div>
+      <form action="/data" method="post">
+        <label for="name"> Name: </label> <br>
+        <input type="text" id="name" name="name"> <br><br>
+        <label for="comment"> Comment: </label> <br>
+        <textarea rows="5" cols="75" type="text" id="text" name="text"> </textarea> <br> <br>
+        <input type="submit" value="Submit">
+      </form> 
+    </div>
   </body>
 </html>

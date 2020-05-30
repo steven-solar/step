@@ -27,7 +27,7 @@ function getComments() {
         d.classList.add("box");
         commElem.appendChild(d);
         var d2 = document.createElement("div");
-        d2.innerHTML = "<span class='comment-name'>" + c.name + "</span>" + 
+        d2.innerHTML = "<span class='comment-name'>" + c.name + " " + "</span>" + 
                       "<span class='comment-time'>" + getTimeStamp(c) + "</span>";
         d2.classList.add("comment-info");
         commElem.appendChild(d2);

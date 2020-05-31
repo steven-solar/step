@@ -22,17 +22,30 @@ function getComments() {
   fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
     const commElem = document.getElementById('comments-container');
      comments.forEach(c => {
-        var d = document.createElement("div");
-        d.innerHTML = "<div class='comment-text'>" + c.text + "</div>";
-        d.classList.add("box");
-        commElem.appendChild(d);
-        var d2 = document.createElement("div");
-        d2.innerHTML = "<span class='comment-name'>" + c.name + " " + "</span>" + 
+        var textDiv = document.createElement("div");
+        textDiv.innerHTML = "<div class='comment-text'>" + c.text + "</div>";
+        textDiv.classList.add("box");
+        commElem.appendChild(textDiv);
+        var infoDiv = document.createElement("div");
+        infoDiv.innerHTML = "<span class='comment-name'>" + c.name + " " + "</span>" + 
                       "<span class='comment-time'>" + getTimeStamp(c) + "</span>";
-        d2.classList.add("comment-info");
-        commElem.appendChild(d2);
+        infoDiv.classList.add("comment-info");
+        commElem.appendChild(infoDiv);
     });
-  });  
+    if (comments.length > 0) {
+      buttonDiv = document.getElementById("delete");
+      buttonDiv.innerHTML = "";
+      var button = document.createElement("button");
+      button.onclick = function() { deleteComments(); }; 
+      if (comments.length === 1) {
+        button.innerText = "Delete Only Comment";
+      }
+      else {
+        button.innerText = "Delete All " + comments.length + " Comments";
+      }
+      buttonDiv.appendChild(button);
+    }
+  }); 
 }
 
 function deleteComments() {

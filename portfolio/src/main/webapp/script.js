@@ -44,9 +44,9 @@ function getComments() {
       else {
         button.innerText = "Delete All " + comments.length + " Comments";
       }
-      buttonDiv.appendChild(button);  
+      buttonDiv.appendChild(button);
     }
-    }); 
+  }); 
 }
 
 function deleteComments() {

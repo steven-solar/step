@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -66,14 +68,13 @@ public class DataServlet extends HttpServlet {
       String name = (String) e.getProperty("name");
       String text = (String) e.getProperty("text");
       long timestamp = (long) e.getProperty("timestamp");
-      Comment comment = new Comment(id, name, text, timestamp);
+      Comment comment = new Comment(id, email, name, text, timestamp);
       comments.add(comment);
     }
 
     Gson gson = new Gson();
     response.setContentType("application/json;");
     response.getWriter().println(gson.toJson(comments));
-    response.setContentType("application/json;");
   }
 
   @Override

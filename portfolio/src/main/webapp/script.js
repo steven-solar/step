@@ -18,6 +18,8 @@
 function getComments() {
   const commElem = document.getElementById('comments-container');
   commElem.innerHTML = "";
+  var buttonDiv = document.getElementById("delete");
+  buttonDiv.innerHTML = "";
   const number = document.getElementById("number").value;
   fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
     const commElem = document.getElementById('comments-container');
@@ -28,28 +30,23 @@ function getComments() {
         commElem.appendChild(textDiv);
         var infoDiv = document.createElement("div");
         infoDiv.innerHTML = "<span class='comment-name'>" + c.name + " " + "</span>" + 
+                      "<span class='comment-name'>" + " ("+ c.email + ") " + "</span>" + 
                       "<span class='comment-time'>" + getTimeStamp(c) + "</span>";
         infoDiv.classList.add("comment-info");
         commElem.appendChild(infoDiv);
     });
-    renderDeleteButton();
-  }); 
-}
-
-function renderDeleteButton() {
-  if (comments.length > 0) {
-    buttonDiv = document.getElementById("delete");
-    buttonDiv.innerHTML = "";
-    var button = document.createElement("button");
-    button.onclick = function() { deleteComments(); }; 
-    if (comments.length === 1) {
-      button.innerText = "Delete Only Comment";
+    if (comments.length > 0) {
+      var button = document.createElement("button");
+      button.onclick = function() { deleteComments(); }; 
+      if (comments.length === 1) {
+        button.innerText = "Delete Only Comment";
+      }
+      else {
+        button.innerText = "Delete All " + comments.length + " Comments";
+      }
+      buttonDiv.appendChild(button);  
     }
-    else {
-      button.innerText = "Delete All " + comments.length + " Comments";
-    }
-    buttonDiv.appendChild(button);
-  }
+    }); 
 }
 
 function deleteComments() {

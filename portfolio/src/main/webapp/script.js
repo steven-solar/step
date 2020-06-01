@@ -32,20 +32,24 @@ function getComments() {
         infoDiv.classList.add("comment-info");
         commElem.appendChild(infoDiv);
     });
-    if (comments.length > 0) {
-      buttonDiv = document.getElementById("delete");
-      buttonDiv.innerHTML = "";
-      var button = document.createElement("button");
-      button.onclick = function() { deleteComments(); }; 
-      if (comments.length === 1) {
-        button.innerText = "Delete Only Comment";
-      }
-      else {
-        button.innerText = "Delete All " + comments.length + " Comments";
-      }
-      buttonDiv.appendChild(button);
-    }
+    renderDeleteButton();
   }); 
+}
+
+function renderDeleteButton() {
+  if (comments.length > 0) {
+    buttonDiv = document.getElementById("delete");
+    buttonDiv.innerHTML = "";
+    var button = document.createElement("button");
+    button.onclick = function() { deleteComments(); }; 
+    if (comments.length === 1) {
+      button.innerText = "Delete Only Comment";
+    }
+    else {
+      button.innerText = "Delete All " + comments.length + " Comments";
+    }
+    buttonDiv.appendChild(button);
+  }
 }
 
 function deleteComments() {
@@ -78,4 +82,23 @@ function getTimeStamp(comment) {
   else {
     return years === 1 ? years + " year ago" : years + " years ago";
   }
+}
+
+function renderForm() {
+  var commentForm = document.getElementById("comment-form");
+  fetch("/auth").then(response => response.json())
+  .then(json => parseBool(json)).then(isLoggedIn => {
+    if (isLoggedIn)
+      commentForm.style.display = "block";
+    else 
+      commentForm.style.display = "none";
+  });
+}
+
+function parseBool(s) {
+  s = s.toLowerCase();
+  if (s === "true")
+    return true;
+  else
+    return false;  
 }

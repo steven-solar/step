@@ -87,19 +87,16 @@ function getTimeStamp(comment) {
 
 function renderForm() {
   var commentForm = document.getElementById("comment-form");
+  const authDiv = document.getElementById("auth-message");
   fetch("/auth").then(response => response.json())
-  .then(json => parseBool(json)).then(isLoggedIn => {
-    if (isLoggedIn)
+  .then(res => {
+    if (res[0]) {
       commentForm.style.display = "block";
-    else 
+      authDiv.innerHTML = "<p>Logout <a href=\"" + res[1] + "\">here</a>.</p>"
+    }
+    else {
       commentForm.style.display = "none";
+      authDiv.innerHTML = "<p>Login <a href=\"" + res[1] + "\">here</a> to leave comments.</p>"
+    }
   });
-}
-
-function parseBool(s) {
-  s = s.toLowerCase();
-  if (s === "true")
-    return true;
-  else
-    return false;  
 }

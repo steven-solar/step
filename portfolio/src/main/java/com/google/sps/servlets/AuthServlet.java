@@ -22,13 +22,15 @@ public class AuthServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
     response.setContentType("application/json;");
-    Gson gson = new Gson();
     UserService userService = UserServiceFactory.getUserService();
+    Gson gson = new Gson();
     if (userService.isUserLoggedIn()) {
-      response.getWriter().println(gson.toJson("true"));
+      String logoutUrl = userService.createLogoutURL("/");
+      response.getWriter().println("["+gson.toJson(true)+","+gson.toJson(logoutUrl)+"]");
       return;
     }
-    response.getWriter().println(gson.toJson("false"));
+    String loginUrl = userService.createLoginURL("/");
+    response.getWriter().println("["+gson.toJson(false)+","+gson.toJson(loginUrl)+"]");
     return;
   }
 }

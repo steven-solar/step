@@ -14,19 +14,82 @@
 
 package com.google.sps.servlets;
 
+import java.util.List;
+import java.util.ArrayList;
+import com.google.sps.data.Comment;
+import com.google.gson.Gson;
 import java.io.IOException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+import com.google.appengine.api.datastore.FetchOptions;
+import com.google.appengine.api.datastore.DatastoreService;
+import com.google.appengine.api.datastore.DatastoreServiceFactory;
+import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.PreparedQuery;
+import com.google.appengine.api.datastore.Query;
+import com.google.appengine.api.datastore.Query.SortDirection;
+
+/** Servlet that allows users to post and get comments. */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    response.setContentType("text/html;");
-    response.getWriter().println("<h1>Hello world!</h1>");
+    Query query = new Query("Comment").addSort("timestamp", SortDirection.DESCENDING);
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    PreparedQuery results = datastore.prepare(query);
+    String sNumber = request.getParameter("number");
+    int num = 0;
+    if (sNumber.length() > 0) {
+      try {
+        num = Integer.parseInt(sNumber);
+      }
+      catch (NumberFormatException e) {
+        System.err.println(e);
+        response.sendRedirect("/");
+        return;
+      }
+    }
+    if (num < 0) {
+        System.err.println("Enter a positive number.");
+        response.sendRedirect("/");
+        return;
+    }
+    
+    List<Entity> entities = results.asList(FetchOptions.Builder.withLimit(num));
+    List<Comment> comments = new ArrayList<>();
+    for(Entity e : entities) {
+      long id = e.getKey().getId();
+      String name = (String) e.getProperty("name");
+      String text = (String) e.getProperty("text");
+      long timestamp = (long) e.getProperty("timestamp");
+      Comment comment = new Comment(id, name, text, timestamp);
+      comments.add(comment);
+    }
+
+    Gson gson = new Gson();
+    response.setContentType("application/json;");
+    response.getWriter().println(gson.toJson(comments));
+    response.setContentType("application/json;");
+  }
+
+  @Override
+  public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    String name = request.getParameter("name");
+    String text = request.getParameter("text");
+    long timestamp = System.currentTimeMillis();
+
+    Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("name", name);
+    commentEntity.setProperty("text", text);
+    commentEntity.setProperty("timestamp", timestamp);
+
+    DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+    datastore.put(commentEntity);
+
+    response.sendRedirect("/");
   }
 }

@@ -97,6 +97,24 @@
           </a>
         </div> 
       </div>
-    </div>   
+    </div>
+    <div class="comments-title"> Check out people's comments! </div>
+    <div>
+      <span> I'd like to see </span> 
+      <input type="text" id="number" oninput="getComments()">
+      <span for="number"> comments. </span>
+    </div>
+    <div class="comments-container">
+      <div id="comments-container"> </div>  
+      <div id="delete" class="delete">  </div>
+      <div class="comments-title"> Leave your thoughts! </div>
+      <form action="/data" method="post">
+        <label for="name"> Name: </label> <br>
+        <input type="text" id="name" name="name"> <br><br>
+        <label for="comment"> Comment: </label> <br>
+        <textarea rows="5" cols="75" type="text" id="text" name="text"> </textarea> <br> <br>
+        <input type="submit" value="Submit" class="submit">
+      </form> 
+    </div>
   </body>
 </html>

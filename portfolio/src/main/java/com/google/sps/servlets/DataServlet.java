@@ -14,7 +14,8 @@
 
 package com.google.sps.servlets;
 
-import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
 import com.google.sps.data.Comment;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -31,7 +32,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** Servlet that allows users to post and get comments. */
 @WebServlet("/data")
 public class DataServlet extends HttpServlet {
 
@@ -47,13 +48,13 @@ public class DataServlet extends HttpServlet {
         num = Integer.parseInt(sNumber);
       }
       catch (NumberFormatException e) {
-        System.out.println(e);
+        System.err.println(e);
         response.sendRedirect("/");
         return;
       }
     }
     if (num < 0) {
-        System.out.println("Enter a positive number.");
+        System.err.println("Enter a positive number.");
         response.sendRedirect("/");
         return;
     }

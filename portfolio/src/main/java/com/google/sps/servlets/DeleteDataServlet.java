@@ -18,7 +18,7 @@ import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.datastore.Query.SortDirection;
 
-/** Servlet that returns some example content. TODO: modify this file to handle comments data */
+/** Servlet that allows for deletion of comments */
 @WebServlet("/delete-data")
 public class DeleteDataServlet extends HttpServlet {
 

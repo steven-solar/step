@@ -13,10 +13,10 @@ public class Comment {
   private final long timestamp;
 
   /** Constructor for a Comment Object */
-  public Comment(long i, String n, String txt, long time){
-    id = i;
-    name = n;
-    text = txt;
-    timestamp = time;
+  public Comment(long id, String name, String text, long timestamp){
+    this.id = id;
+    this.name = name;
+    this.text = text;
+    this.timestamp = timestamp;
   }
 }

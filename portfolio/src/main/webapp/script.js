@@ -100,7 +100,22 @@ function renderForm() {
 function initMap() {
   const map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 40.7128, lng: -98.006},
-    zoom: 4, 
-    mapTypeId: 'hybrid'
+    zoom: 4
+  });
+  const marker = new google.maps.Marker({
+    position: {
+      lat: 40.9115, 
+      lng: -73.7824
+    }, 
+    title: 'My Hometown!',
+    animation: google.maps.Animation.DROP,
+    map: map
+  });
+  marker.addListener('click', function() {
+    if (marker.getAnimation() === google.maps.Animation.BOUNCE)  
+      marker.setAnimation(null);
+    else
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+      
   });
 }

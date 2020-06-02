@@ -96,3 +96,11 @@ function renderForm() {
     }
   });
 }
+
+function initMap() {
+  const map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 40.7128, lng: -98.006},
+    zoom: 4, 
+    mapTypeId: 'hybrid'
+  });
+}

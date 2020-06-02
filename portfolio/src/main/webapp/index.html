@@ -9,8 +9,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
+    <script async defer 
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCceMyx3SzOJO2G1yGVF8xY52vQFV5B5ck&callback=initMap">
+    </script>
   </head>
-  <body onload="renderForm()">
+  <body onload="renderForm();initMap();">
     <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
       <div class="container-fluid">
           <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
@@ -98,6 +101,7 @@
         </div> 
       </div>
     </div>
+    <div class="map" id="map"> </div>
     <div class="comments-title"> Check out people's comments! </div>
     <div>
       <span> I'd like to see </span> 

@@ -86,13 +86,13 @@ function renderForm() {
   const authDiv = document.getElementById("auth-message");
   fetch("/auth").then(response => response.json())
   .then(res => {
-    if (res[0]) {
+    if (res.isLoggedIn) {
       commentForm.style.display = "block";
-      authDiv.innerHTML = "<p>Logout <a href=\"" + res[1] + "\">here</a>.</p>"
+      authDiv.innerHTML = "<p>Logout <a href=\"" + res.url + "\">here</a>.</p>"
     }
     else {
       commentForm.style.display = "none";
-      authDiv.innerHTML = "<p>Login <a href=\"" + res[1] + "\">here</a> to leave comments.</p>"
+      authDiv.innerHTML = "<p>Login <a href=\"" + res.url + "\">here</a> to leave comments.</p>"
     }
   });
 }

@@ -111,11 +111,19 @@ function initMap() {
     animation: google.maps.Animation.DROP,
     map: map
   });
+  
+  const contentString = "<div> I live in New Rochelle, NY </div>";
+  const infowindow = new google.maps.InfoWindow({
+    content: contentString
+  });
+
   marker.addListener('click', function() {
     if (marker.getAnimation() === google.maps.Animation.BOUNCE)  
       marker.setAnimation(null);
-    else
+    else {
+      infowindow.open(map, marker);
       marker.setAnimation(google.maps.Animation.BOUNCE);
-      
+    }
   });
+
 }

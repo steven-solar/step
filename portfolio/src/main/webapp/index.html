@@ -10,7 +10,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="script.js"></script>
   </head>
-  <body>
+  <body onload="renderForm()">
     <nav class="navbar navbar-expand-md navbar-dark bg-primary mb-3">
       <div class="container-fluid">
           <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
@@ -108,13 +108,14 @@
       <div id="comments-container"> </div>  
       <div id="delete" class="delete">  </div>
       <div class="comments-title"> Leave your thoughts! </div>
-      <form action="/data" method="post">
+      <form id="comment-form" action="/data" method="post" class="comment-form">
         <label for="name"> Name: </label> <br>
         <input type="text" id="name" name="name"> <br><br>
         <label for="comment"> Comment: </label> <br>
         <textarea rows="5" cols="75" type="text" id="text" name="text"> </textarea> <br> <br>
         <input type="submit" value="Submit" class="submit">
       </form> 
+      <div id="auth-message"> </div>
     </div>
   </body>
 </html>

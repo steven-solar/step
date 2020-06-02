@@ -24,6 +24,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 import com.google.appengine.api.datastore.FetchOptions;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
@@ -63,26 +65,29 @@ public class DataServlet extends HttpServlet {
     List<Comment> comments = new ArrayList<>();
     for(Entity e : entities) {
       long id = e.getKey().getId();
+      String email = (String) e.getProperty("email");
       String name = (String) e.getProperty("name");
       String text = (String) e.getProperty("text");
       long timestamp = (long) e.getProperty("timestamp");
-      Comment comment = new Comment(id, name, text, timestamp);
+      Comment comment = new Comment(id, email, name, text, timestamp);
       comments.add(comment);
     }
 
     Gson gson = new Gson();
     response.setContentType("application/json;");
     response.getWriter().println(gson.toJson(comments));
-    response.setContentType("application/json;");
   }
 
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    UserService userService = UserServiceFactory.getUserService();   
+    String email = userService.getCurrentUser().getEmail();   
     String name = request.getParameter("name");
     String text = request.getParameter("text");
     long timestamp = System.currentTimeMillis();
 
     Entity commentEntity = new Entity("Comment");
+    commentEntity.setProperty("email", email);
     commentEntity.setProperty("name", name);
     commentEntity.setProperty("text", text);
     commentEntity.setProperty("timestamp", timestamp);

@@ -8,13 +8,15 @@ package com.google.sps.data;
 public class Comment {
     
   private final long id;
+  private final String email;
   private final String name;
   private final String text;
   private final long timestamp;
 
   /** Constructor for a Comment Object */
-  public Comment(long id, String name, String text, long timestamp){
+  public Comment(long id, String email, String name, String text, long timestamp){
     this.id = id;
+    this.email = email;
     this.name = name;
     this.text = text;
     this.timestamp = timestamp;

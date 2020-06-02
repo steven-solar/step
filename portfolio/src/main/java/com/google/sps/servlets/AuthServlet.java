@@ -27,12 +27,12 @@ public class AuthServlet extends HttpServlet {
     Gson gson = new Gson();
     if (userService.isUserLoggedIn()) {
       String logoutUrl = userService.createLogoutURL("/");
-      AuthResponse a = new AuthResponse(true, logoutUrl);
+      AuthResponse a = new AuthResponse(/* isLoggedIn =*/ true, logoutUrl);
       response.getWriter().println(gson.toJson(a));
       return;
     }
     String loginUrl = userService.createLoginURL("/");
-    AuthResponse a = new AuthResponse(false, loginUrl);
+    AuthResponse a = new AuthResponse(/* isLoggedIn =*/ false, loginUrl);
     response.getWriter().println(gson.toJson(a));
     return;
   }

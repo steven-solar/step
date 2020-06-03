@@ -123,7 +123,13 @@ function initMap() {
     else {
       infowindow.open(map, marker);
       marker.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(function() { marker.setAnimation(null); }, 600);
     }
   });
 
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+  renderForm();
+  initMap();
+});

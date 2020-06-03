@@ -69,7 +69,9 @@ public class DataServlet extends HttpServlet {
       String name = (String) e.getProperty("name");
       String text = (String) e.getProperty("text");
       long timestamp = (long) e.getProperty("timestamp");
-      Comment comment = new Comment(id, email, name, text, timestamp);
+      double lat = (double) e.getProperty("lat");
+      double lng = (double) e.getProperty("lng");
+      Comment comment = new Comment(id, email, name, text, timestamp, lat, lng);
       comments.add(comment);
     }
 
@@ -85,12 +87,16 @@ public class DataServlet extends HttpServlet {
     String name = request.getParameter("name");
     String text = request.getParameter("text");
     long timestamp = System.currentTimeMillis();
+    double lat = Double.parseDouble(request.getParameter("lat"));
+    double lng = Double.parseDouble(request.getParameter("lng"));
 
     Entity commentEntity = new Entity("Comment");
     commentEntity.setProperty("email", email);
     commentEntity.setProperty("name", name);
     commentEntity.setProperty("text", text);
     commentEntity.setProperty("timestamp", timestamp);
+    commentEntity.setProperty("lat", lat);
+    commentEntity.setProperty("lng", lng);
 
     DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
     datastore.put(commentEntity);

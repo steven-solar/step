@@ -36,13 +36,13 @@ function validateForm() {
  * Gets comments for the page.
  */
 function getComments() {
-  const commElem = document.getElementById('comments-container');
+  const commElem = document.getElementById("comments-container");
   commElem.innerHTML = "";
   var buttonDiv = document.getElementById("delete");
   buttonDiv.innerHTML = "";
   const number = document.getElementById("number-of-comments").value;
   fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
-    const commElem = document.getElementById('comments-container');
+    const commElem = document.getElementById("comments-container");
      comments.forEach(c => {
         var textDiv = document.createElement("div");
         textDiv.innerHTML = "<div class='comment-text'>" + c.text + "</div>";
@@ -50,7 +50,7 @@ function getComments() {
         commElem.appendChild(textDiv);
         var infoDiv = document.createElement("div");
         infoDiv.innerHTML = "<span class='comment-name'>" + c.name + " " + "</span>" + 
-                      "<span class='comment-name'>" + " ("+ c.email + ") " + "</span>" + 
+                      "<span class='comment-name'>" + " ("+ c.email + ") " + "</span>" +
                       "<span class='comment-time'>" + getTimeStamp(c) + "</span>";
         infoDiv.classList.add("comment-info");
         commElem.appendChild(infoDiv);
@@ -67,10 +67,11 @@ function getComments() {
       buttonDiv.appendChild(button);
     }
   }); 
+  fillMap();
 }
 
 function deleteComments() {
-  fetch("delete-data", {method: "POST"});
+  fetch("/delete-data", {method: "POST"});
   window.location.reload();
 }
 
@@ -115,19 +116,28 @@ function renderForm() {
       authDiv.innerHTML = "<p>Login <a href=\"" + res.url + "\">here</a> to leave comments.</p>"
     }
   });
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      commentForm.lat.value = position.coords.latitude;
+      commentForm.lng.value = position.coords.longitude;
+    });
+  }
 }
 
-function makeMap() {
-  const map = new google.maps.Map(document.getElementById('map'), {
+var map; 
+
+function initMap() {
+  map = new google.maps.Map(document.getElementById("map"), {
     center: {lat: 40.7128, lng: -98.006},
     zoom: 4
   });
+
   const marker = new google.maps.Marker({
     position: {
       lat: 40.9115, 
       lng: -73.7824
     }, 
-    title: 'My Hometown!',
+    title: "My Hometown!",
     animation: google.maps.Animation.DROP,
     map: map
   });
@@ -137,7 +147,7 @@ function makeMap() {
     content: contentString
   });
 
-  marker.addListener('click', function() {
+  marker.addListener("click", function() {
     if (marker.getAnimation() === google.maps.Animation.BOUNCE)  
       marker.setAnimation(null);
     else {
@@ -146,7 +156,39 @@ function makeMap() {
       setTimeout(function() { marker.setAnimation(null); }, 600);
     }
   });
+}
 
+var markers = [];
+var marker;
+
+function fillMap() {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(null);
+  }
+  markers = [];
+  const number = document.getElementById("number").value;
+    fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
+      for (const c of comments) {
+        window.setTimeout(function() {
+          marker = new google.maps.Marker({
+            position: {
+              lat: c.lat, 
+              lng: c.lng
+            }, 
+            animation: google.maps.Animation.DROP,
+            map: map
+          });
+          markers.push(marker);
+          const contentString = "<div>" + c.name + "</div>" + "<div>" + c.text + "</div>";
+          const infowindow = new google.maps.InfoWindow({content: contentString});
+          marker.addListener("click", function() {
+            infowindow.open(map, marker);
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(function() { marker.setAnimation(null); }, 600);
+          });
+        }, 100);
+      }
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function() {

@@ -12,13 +12,17 @@ public class Comment {
   private final String name;
   private final String text;
   private final long timestamp;
+  private final double lat;
+  private final double lng;
 
   /** Constructor for a Comment Object */
-  public Comment(long id, String email, String name, String text, long timestamp){
+  public Comment(long id, String email, String name, String text, long timestamp, double lat, double lng){
     this.id = id;
     this.email = email;
     this.name = name;
     this.text = text;
     this.timestamp = timestamp;
+    this.lat = lat;
+    this.lng = lng;
   }
 }

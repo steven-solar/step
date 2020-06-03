@@ -96,3 +96,40 @@ function renderForm() {
     }
   });
 }
+
+function initMap() {
+  const map = new google.maps.Map(document.getElementById('map'), {
+    center: {lat: 40.7128, lng: -98.006},
+    zoom: 4
+  });
+  const marker = new google.maps.Marker({
+    position: {
+      lat: 40.9115, 
+      lng: -73.7824
+    }, 
+    title: 'My Hometown!',
+    animation: google.maps.Animation.DROP,
+    map: map
+  });
+  
+  const contentString = "<div> I live in New Rochelle, NY </div>";
+  const infowindow = new google.maps.InfoWindow({
+    content: contentString
+  });
+
+  marker.addListener('click', function() {
+    if (marker.getAnimation() === google.maps.Animation.BOUNCE)  
+      marker.setAnimation(null);
+    else {
+      infowindow.open(map, marker);
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(function() { marker.setAnimation(null); }, 600);
+    }
+  });
+
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  renderForm();
+  initMap();
+});

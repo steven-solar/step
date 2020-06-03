@@ -247,3 +247,9 @@ button:hover {
   border-color: #20bf6b;
   transition: all 0.3s ease 0s;  
 }
+
+.map {
+  height: 750px;
+  width: auto;
+  margin: 50px;
+}

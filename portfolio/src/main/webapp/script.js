@@ -114,7 +114,7 @@ function renderForm() {
   });
 }
 
-function initMap() {
+function makeMap() {
   const map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 40.7128, lng: -98.006},
     zoom: 4
@@ -148,11 +148,10 @@ function initMap() {
 
 document.addEventListener("DOMContentLoaded", function() {
   renderForm();
-  initMap();
+  makeMap();
+  document.getElementById("number").addEventListener("input", function() {
+    if (validateForm())
+        getComments();
+  });
 });
 
-console.log(document.getElementById("number"));
-document.getElementById("number").addEventListener("input", function() {
-    getComments();
-    return validateForm();
-})

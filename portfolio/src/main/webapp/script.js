@@ -128,13 +128,9 @@ function makeMap() {
   });
 
   marker.addListener("click", function() {
-    if (marker.getAnimation() === google.maps.Animation.BOUNCE)  
-      marker.setAnimation(null);
-    else {
-      infowindow.open(map, marker);
-      marker.setAnimation(google.maps.Animation.BOUNCE);
+    infowindow.open(map, marker);
+    marker.setAnimation(google.maps.Animation.BOUNCE);
       setTimeout(function() { marker.setAnimation(null); }, 600);
-    }
   });
 }
 
@@ -151,9 +147,12 @@ function addPin(comment, time, i) {
       animation: google.maps.Animation.DROP,
       map: map
     });
+    
     markers.push(marker);
+
     const contentString = "<div>" + comment.name + "</div>" + "<div>" + comment.text + "</div>";
     const infowindow = new google.maps.InfoWindow({content: contentString});
+
     marker.addListener("click", function() {
       infowindow.open(map, marker);
       marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -162,11 +161,15 @@ function addPin(comment, time, i) {
   }, time * i); 
 }
 
-function fillMap() {
+function emptyMap() {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(null);
   }
-  markers = [];
+  markers = [];   
+}
+
+function fillMap() {
+  emptyMap();
   const number = document.getElementById("number").value;
     fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
       var i = 0;

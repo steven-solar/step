@@ -126,7 +126,7 @@ function renderForm() {
 
 var map; 
 
-function initMap() {
+function makeMap() {
   map = new google.maps.Map(document.getElementById("map"), {
     center: {lat: 40.7128, lng: -98.006},
     zoom: 4
@@ -161,6 +161,27 @@ function initMap() {
 var markers = [];
 var marker;
 
+function addPin(comment, time, i) {
+  setTimeout(function() {
+    marker = new google.maps.Marker({
+      position: {
+        lat: comment.lat, 
+        lng: comment.lng
+      }, 
+      animation: google.maps.Animation.DROP,
+      map: map
+    });
+    markers.push(marker);
+    const contentString = "<div>" + comment.name + "</div>" + "<div>" + comment.text + "</div>";
+    const infowindow = new google.maps.InfoWindow({content: contentString});
+    marker.addListener("click", function() {
+      infowindow.open(map, marker);
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+        setTimeout(function() { marker.setAnimation(null); }, 600);
+      });
+  }, time * i); 
+}
+
 function fillMap() {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(null);
@@ -168,25 +189,10 @@ function fillMap() {
   markers = [];
   const number = document.getElementById("number").value;
     fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
+      var i = 0;
       comments.forEach(c => {
-        window.setInterval(function() {
-          marker = new google.maps.Marker({
-            position: {
-              lat: c.lat, 
-              lng: c.lng
-            }, 
-            animation: google.maps.Animation.DROP,
-            map: map
-          });
-          markers.push(marker);
-          const contentString = "<div>" + c.name + "</div>" + "<div>" + c.text + "</div>";
-          const infowindow = new google.maps.InfoWindow({content: contentString});
-          marker.addListener("click", function() {
-            infowindow.open(map, marker);
-            marker.setAnimation(google.maps.Animation.BOUNCE);
-            setTimeout(function() { marker.setAnimation(null); }, 600);
-          });
-        }, 1000);
+        addPin(c, 1000, i);
+        i++;
       });
     });
 }

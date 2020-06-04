@@ -150,3 +150,9 @@ document.addEventListener("DOMContentLoaded", function() {
   renderForm();
   initMap();
 });
+
+console.log(document.getElementById("number"));
+document.getElementById("number").addEventListener("input", function() {
+    getComments();
+    return validateForm();
+})

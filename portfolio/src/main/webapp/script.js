@@ -13,12 +13,12 @@
 // limitations under the License.
 
 function validateForm() {
-  const sNumber = document.getElementById("number").value;
-  var errorSpan = document.getElementById("error-message");
+  const numberCommentsInput = document.getElementById("number-of-comments").value;
+  const errorSpan = document.getElementById("error-message");
   const regex = /^\d+$/;
   errorSpan.innerText = "";
-  if (sNumber.length > 0) {
-    if (regex.test(sNumber)) {
+  if (numberCommentsInput.length > 0) {
+    if (regex.test(numberCommentsInput)) {
       errorSpan.innerText = "";
       return true;
     }
@@ -26,6 +26,9 @@ function validateForm() {
       errorSpan.innerText = "Please enter a valid, positive integer."
       return false;
     }
+  }
+  else {
+    return false;
   }
 }
 
@@ -37,7 +40,7 @@ function getComments() {
   commElem.innerHTML = "";
   var buttonDiv = document.getElementById("delete");
   buttonDiv.innerHTML = "";
-  const number = document.getElementById("number").value;
+  const number = document.getElementById("number-of-comments").value;
   fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
     const commElem = document.getElementById('comments-container');
      comments.forEach(c => {
@@ -149,9 +152,10 @@ function makeMap() {
 document.addEventListener("DOMContentLoaded", function() {
   renderForm();
   makeMap();
-  document.getElementById("number").addEventListener("input", function() {
-    if (validateForm())
-        getComments();
+  document.getElementById("number-of-comments").addEventListener("input", function() {
+    if (validateForm()) {
+      getComments();
+    }
   });
 });
 

@@ -12,6 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+function validateForm() {
+  const numberCommentsInput = document.getElementById("number-of-comments").value;
+  const errorSpan = document.getElementById("error-message");
+  const regex = /^\d+$/;
+  errorSpan.innerText = "";
+  if (numberCommentsInput.length > 0) {
+    if (regex.test(numberCommentsInput)) {
+      errorSpan.innerText = "";
+      return true;
+    }
+    else {
+      errorSpan.innerText = "Please enter a valid, positive integer."
+      return false;
+    }
+  }
+  else {
+    return false;
+  }
+}
+
 /**
  * Gets comments for the page.
  */
@@ -20,7 +40,7 @@ function getComments() {
   commElem.innerHTML = "";
   var buttonDiv = document.getElementById("delete");
   buttonDiv.innerHTML = "";
-  const number = document.getElementById("number").value;
+  const number = document.getElementById("number-of-comments").value;
   fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
     const commElem = document.getElementById('comments-container');
      comments.forEach(c => {
@@ -97,7 +117,7 @@ function renderForm() {
   });
 }
 
-function initMap() {
+function makeMap() {
   const map = new google.maps.Map(document.getElementById('map'), {
     center: {lat: 40.7128, lng: -98.006},
     zoom: 4
@@ -131,5 +151,11 @@ function initMap() {
 
 document.addEventListener("DOMContentLoaded", function() {
   renderForm();
-  initMap();
+  makeMap();
+  document.getElementById("number-of-comments").addEventListener("input", function() {
+    if (validateForm()) {
+      getComments();
+    }
+  });
 });
+

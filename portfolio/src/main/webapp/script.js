@@ -148,8 +148,8 @@ function fillMap() {
   markers = [];
   const number = document.getElementById("number").value;
     fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
-      for (const c of comments) {
-        window.setTimeout(function() {
+      comments.forEach(c => {
+        window.setInterval(function() {
           marker = new google.maps.Marker({
             position: {
               lat: c.lat, 
@@ -157,15 +157,7 @@ function fillMap() {
             }, 
             animation: google.maps.Animation.DROP,
             map: map
-          }, 2000);
-          marker = new google.maps.Marker({
-            position: {
-              lat: c.lat + 5, 
-              lng: c.lng - 10
-            }, 
-            animation: google.maps.Animation.DROP,
-            map: map
-          }, 2000);
+          });
           markers.push(marker);
           const contentString = "<div>" + c.name + "</div>" + "<div>" + c.text + "</div>";
           const infowindow = new google.maps.InfoWindow({content: contentString});
@@ -174,8 +166,8 @@ function fillMap() {
             marker.setAnimation(google.maps.Animation.BOUNCE);
             setTimeout(function() { marker.setAnimation(null); }, 600);
           });
-        }, 100);
-      }
+        }, 1000);
+      });
     });
 }
 

@@ -37,9 +37,9 @@ function validateForm() {
  */
 function getComments() {
   const commElem = document.getElementById("comments-container");
-  commElem.innerHTML = "";
+  commElem.innerText = "";
   var buttonDiv = document.getElementById("delete");
-  buttonDiv.innerHTML = "";
+  buttonDiv.innerText = "";
   const number = document.getElementById("number-of-comments").value;
   fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
     const commElem = document.getElementById("comments-container");
@@ -154,8 +154,8 @@ function makeMap() {
   });
 }
 
-var markers = [];
-var marker;
+let markers = [];
+let marker;
 
 function addPin(comment, time, i) {
   setTimeout(function() {

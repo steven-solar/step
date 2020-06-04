@@ -177,7 +177,15 @@ function fillMap() {
             }, 
             animation: google.maps.Animation.DROP,
             map: map
-          });
+          }, 2000);
+          marker = new google.maps.Marker({
+            position: {
+              lat: c.lat + 5, 
+              lng: c.lng - 10
+            }, 
+            animation: google.maps.Animation.DROP,
+            map: map
+          }, 2000);
           markers.push(marker);
           const contentString = "<div>" + c.name + "</div>" + "<div>" + c.text + "</div>";
           const infowindow = new google.maps.InfoWindow({content: contentString});

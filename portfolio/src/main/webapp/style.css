@@ -226,6 +226,10 @@ button:hover {
   transition: all 0.3s ease 0s;
 }
 
+#error-message {
+  color: red;
+}
+
 .comment-form {
   display: none;
 }

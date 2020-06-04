@@ -12,6 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+function validateForm() {
+  const sNumber = document.getElementById("number").value;
+  var errorSpan = document.getElementById("error-message");
+  const regex = /^\d+$/;
+  errorSpan.innerText = "";
+  if (sNumber.length > 0) {
+    if (regex.test(sNumber)) {
+      errorSpan.innerText = "";
+      return true;
+    }
+    else {
+      errorSpan.innerText = "Please enter a valid, positive integer."
+      return false;
+    }
+  }
+}
+
 /**
  * Gets comments for the page.
  */

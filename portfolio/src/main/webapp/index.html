@@ -105,8 +105,9 @@
     <div class="comments-title"> Check out people's comments! </div>
     <div>
       <span> I'd like to see </span> 
-      <input type="text" id="number" oninput="getComments()">
+      <input type="text" id="number" oninput="getComments(); return validateForm();">
       <span for="number"> comments. </span>
+      <div id="error-message"> </div>
     </div>
     <div class="comments-container">
       <div id="comments-container"> </div>  

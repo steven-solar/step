@@ -6,7 +6,9 @@
   color: white;
   font-size: 22px;
   text-decoration: none;
-}:hover {
+}
+
+.link:hover {
   color: black;
   text-decoration: none !important;
 }
@@ -34,7 +36,9 @@
   white-space: nowrap;
   padding-top: 25px;
   margin-right: 20px;
-} :first {
+} 
+
+.icon:first {
   margin-right: 0px;
 }
 
@@ -159,7 +163,7 @@ img {
   margin: 30px 0px 20px 0px;
 }
  
-.comments-container {
+.offset-left {
   margin: 0% 2.5%;
 }
  
@@ -189,6 +193,7 @@ img {
   margin-left: 10%;
   margin-top: -3%;
 }
+
 .comment-name {
   font-weight: 600;
   font-size: 16px;
@@ -204,7 +209,7 @@ img {
   color: grey;
 }
 
-.delete {
+#delete-button {
   text-align: center
 }
 
@@ -230,11 +235,11 @@ button:hover {
   color: red;
 }
 
-.comment-form {
+#comment-form {
   display: none;
 }
 
-.submit {
+#submit {
   color: #20bf6b;
   font-weight: 500;
   font-size: 16px;
@@ -244,7 +249,7 @@ button:hover {
   transition: all 0.3s ease 0s;
 }
 
-.submit:hover {
+#submit:hover {
   background: #20bf6b;
   color: white;
   border-radius: 50px;
@@ -252,8 +257,12 @@ button:hover {
   transition: all 0.3s ease 0s;  
 }
 
-.map {
+#map-container {
   height: 750px;
   width: auto;
   margin: 50px;
+}
+
+#auth-message {
+  margin-top: 10px;
 }

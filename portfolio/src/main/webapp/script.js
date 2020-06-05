@@ -32,45 +32,69 @@ function validateForm() {
   }
 }
 
+function createCommentElement(comment) {
+  let commentElement = document.createElement("div");
+
+  let textDiv = document.createElement("div");
+  let textSpan = document.createElement("div");
+  textSpan.innerText = comment.text;
+  textSpan.classList.add("comment-text");
+  textDiv.appendChild(textSpan);
+  textDiv.classList.add("box");
+  commentElement.appendChild(textDiv);
+
+  let infoDiv = document.createElement("div");
+  let nameSpan = document.createElement("span");
+  nameSpan.innerText = `${comment.name} (${comment.email}) `;
+  nameSpan.classList.add("comment-name");
+  infoDiv.appendChild(nameSpan);
+  let timeSpan = document.createElement("span");
+  timeSpan.innerText = getTimeStamp(comment);
+  timeSpan.classList.add("comment-time");
+  infoDiv.appendChild(timeSpan);
+  infoDiv.classList.add("comment-info");
+  commentElement.appendChild(infoDiv);
+
+  return commentElement;
+}
 /**
  * Gets comments for the page.
  */
 function getComments() {
-  const commElem = document.getElementById('comments-container');
-  commElem.innerHTML = "";
-  var buttonDiv = document.getElementById("delete");
-  buttonDiv.innerHTML = "";
-  const number = document.getElementById("number-of-comments").value;
-  fetch("/data?number=" + number).then(response => response.json()).then((comments) => {
-    const commElem = document.getElementById('comments-container');
+  const commentsContainer = document.getElementById("comments-container");
+  commentsContainer.innerText = "";
+  let buttonDiv = document.getElementById("delete");
+  buttonDiv.innerText = "";
+  const numberCommentsInput = document.getElementById("number-of-comments").value;
+  fetch("/data?number=" + numberCommentsInput).then(response => response.json()).then((comments) => {
+    const commentsContainer = document.getElementById("comments-container");
      comments.forEach(c => {
-        var textDiv = document.createElement("div");
-        textDiv.innerHTML = "<div class='comment-text'>" + c.text + "</div>";
-        textDiv.classList.add("box");
-        commElem.appendChild(textDiv);
-        var infoDiv = document.createElement("div");
-        infoDiv.innerHTML = "<span class='comment-name'>" + c.name + " " + "</span>" + 
-                      "<span class='comment-name'>" + " ("+ c.email + ") " + "</span>" + 
-                      "<span class='comment-time'>" + getTimeStamp(c) + "</span>";
-        infoDiv.classList.add("comment-info");
-        commElem.appendChild(infoDiv);
+        let comment = createCommentElement(c);
+        commentsContainer.appendChild(comment);
     });
     if (comments.length > 0) {
-      var button = document.createElement("button");
+      let button = document.createElement("button");
       button.onclick = function() { deleteComments(); }; 
       if (comments.length === 1) {
         button.innerText = "Delete Only Comment";
       }
       else {
-        button.innerText = "Delete All " + comments.length + " Comments";
+        button.innerText = `Delete All ${comments.length} Comments`;
       }
       buttonDiv.appendChild(button);
     }
   }); 
+  fillMap();
 }
 
+function clearComments() {
+  const commentsContainer = document.getElementById("comments-container");
+  commentsContainer.innerText = "";
+  let buttonDiv = document.getElementById("delete");
+  buttonDiv.innerText = "";  
+}
 function deleteComments() {
-  fetch("delete-data", {method: "POST"});
+  fetch("/delete-data", {method: "POST"});
   window.location.reload();
 }
 
@@ -85,49 +109,72 @@ function getTimeStamp(comment) {
     return "just now";
   }
   if (seconds < 60) {
-    return seconds === 1 ? seconds + " second ago" : seconds + " seconds ago";
+    return seconds === 1 ? `${seconds} second ago` : `${seconds} seconds ago`;
   }
   else if (minutes < 60) {
-    return minutes === 1 ? minutes + " minute ago" : minutes + " minutes ago";
+    return minutes === 1 ? `${minutes} minute ago` : `${minutes} minutes ago`;
   }
   else if (hours < 24) {
-    return hours === 1 ? hours + " hour ago" : hours + " hours ago";
+    return hours === 1 ? `${hours} hour ago` : `${hours} hours ago`;
   }
   else if (days < 365) {
-    return days === 1 ? days + " day ago" : days + " days ago";
+    return days === 1 ? `${days} day ago` : `${days} days ago`;
   }
   else {
-    return years === 1 ? years + " year ago" : years + " years ago";
+    return years === 1 ? `${years} year ago` : `${years} years ago`;
   }
 }
 
 function renderForm() {
-  var commentForm = document.getElementById("comment-form");
-  const authDiv = document.getElementById("auth-message");
+  let commentForm = document.getElementById("comment-form");
+  let authDiv = document.getElementById("auth-message");
   fetch("/auth").then(response => response.json())
   .then(res => {
     if (res.isLoggedIn) {
       commentForm.style.display = "block";
-      authDiv.innerHTML = "<p>Logout <a href=\"" + res.url + "\">here</a>.</p>"
+      let authMessage = document.createElement("p");
+      let authLink = document.createElement("a");
+      authLink.innerText = "here";
+      authLink.href = res.url;
+      authMessage.appendChild(document.createTextNode("Logout "));
+      authMessage.appendChild(authLink);
+      authMessage.appendChild(document.createTextNode("."));
+      authDiv.appendChild(authMessage);
     }
     else {
       commentForm.style.display = "none";
-      authDiv.innerHTML = "<p>Login <a href=\"" + res.url + "\">here</a> to leave comments.</p>"
+      let authMessage = document.createElement("p");
+      let authLink = document.createElement("a");
+      authLink.innerText = "here";
+      authLink.href = res.url;
+      authMessage.appendChild(document.createTextNode("Login "));
+      authMessage.appendChild(authLink);
+      authMessage.appendChild(document.createTextNode(" to leave comments."));
+      authDiv.appendChild(authMessage);
     }
   });
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      commentForm.lat.value = position.coords.latitude;
+      commentForm.lng.value = position.coords.longitude;
+    });
+  }
 }
 
+let map; 
+
 function makeMap() {
-  const map = new google.maps.Map(document.getElementById('map'), {
+  map = new google.maps.Map(document.getElementById("map"), {
     center: {lat: 40.7128, lng: -98.006},
     zoom: 4
   });
+
   const marker = new google.maps.Marker({
     position: {
       lat: 40.9115, 
       lng: -73.7824
     }, 
-    title: 'My Hometown!',
+    title: "My Hometown!",
     animation: google.maps.Animation.DROP,
     map: map
   });
@@ -137,16 +184,55 @@ function makeMap() {
     content: contentString
   });
 
-  marker.addListener('click', function() {
-    if (marker.getAnimation() === google.maps.Animation.BOUNCE)  
-      marker.setAnimation(null);
-    else {
+  marker.addListener("click", function() {
+    infowindow.open(map, marker);
+    marker.setAnimation(google.maps.Animation.BOUNCE);
+      setTimeout(function() { marker.setAnimation(null); }, 600);
+  });
+}
+
+let markers = [];
+let marker;
+
+function addPin(comment, time, i) {
+  setTimeout(function() {
+    marker = new google.maps.Marker({
+      position: {
+        lat: comment.lat, 
+        lng: comment.lng
+      }, 
+      animation: google.maps.Animation.DROP,
+      map: map
+    });
+    
+    markers.push(marker);
+
+    const contentString = `<div> ${comment.name} </div> <div> ${comment.text} </div>`;
+    const infowindow = new google.maps.InfoWindow({content: contentString});
+
+    marker.addListener("click", function() {
       infowindow.open(map, marker);
       marker.setAnimation(google.maps.Animation.BOUNCE);
-      setTimeout(function() { marker.setAnimation(null); }, 600);
-    }
-  });
+        setTimeout(function() { marker.setAnimation(null); }, 600);
+      });
+  }, time * i); 
+}
 
+function emptyMap() {
+  for (let i = 0; i < markers.length; i++) {
+    markers[i].setMap(null);
+  }
+  markers = [];   
+}
+
+function fillMap() {  
+  emptyMap();
+  const numberCommentsInput = document.getElementById("number-of-comments").value;
+    fetch("/data?number=" + numberCommentsInput).then(response => response.json()).then((comments) => {
+      comments.forEach((c, i) => {
+        addPin(c, 1000, i);
+      });
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -155,6 +241,9 @@ document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("number-of-comments").addEventListener("input", function() {
     if (validateForm()) {
       getComments();
+    }
+    else {
+      clearComments();
     }
   });
 });

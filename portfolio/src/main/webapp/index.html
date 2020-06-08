@@ -101,28 +101,28 @@
         </div> 
       </div>
     </div>
-    <div class="map" id="map"> </div>
+    <div id="map-container"> </div>
     <div class="comments-title"> Check out people's comments! </div>
-    <div class="comments-container">
+    <div class="offset-left">
       <span> I'd like to see </span> 
       <input type="text" id="number-of-comments" >
       <span> comments. </span>
       <div id="error-message"> </div>
     </div>
-    <div class="comments-container">
+    <div class="offset-left">
       <div id="comments-container"> </div>  
-      <div id="delete" class="delete">  </div>
+      <div id="delete-button">  </div>
       <div class="comments-title"> Leave your thoughts! </div>
-      <form id="comment-form" action="/data" method="post" class="comment-form">
+      <form id="comment-form" action="/data" method="post">
         <label for="name"> Name: </label> <br>
         <input type="text" id="name" name="name"> <br><br>
         <label for="comment"> Comment: </label> <br>
         <textarea rows="5" cols="75" type="text" id="text" name="text"> </textarea> <br> <br>
         <input type="hidden" id="lat" name="lat">
         <input type="hidden" id="lng" name="lng">
-        <input type="submit" value="Submit" class="submit">
+        <input type="submit" value="Submit" id="submit">
       </form> 
-      <div id="auth-message"> </div>
+      <span id="auth-message"> </span>
     </div>
   </body>
 </html>

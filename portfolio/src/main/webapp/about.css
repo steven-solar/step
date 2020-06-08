@@ -11,23 +11,23 @@ link:hover {
   color: black;
 }
 
-.abt-title {
+#title {
   font-weight: 600;
   font-size: 48px;
 }
 
-.abt-content {
+#content {
   margin-left: 5%;
   margin-right: 5%;
   font-size: 20px;
   text-align: center;
 } 
 
-.abt-content div {
+#content div {
   margin-top: 20px;
 } 
 
-.abt-content p {
+#content p {
   margin-top: 5px;
   font-size: 16px;
 }
@@ -43,18 +43,18 @@ img {
   justify-content: center;
 } 
 
-.last {
+#last {
   margin-bottom: 30px;
 }
 
 @media only screen and (max-width: 500px) {
-  .abt-content {
+  #content {
     font-size: 16px;
   }
-  .abt-content p {
+  #content p {
     font-size: 12px;
   }
-  .abt-title {
+  #title {
     font-size: 30px;
   }
 }

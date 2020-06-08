@@ -1,17 +1,8 @@
-// Copyright 2019 Google LLC
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     https://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
 
+/** 
+ * Validates the user's inputted number of comments to be displayed, called on input.
+ * @return {boolean} Whether user input was a valid, positive integer.
+ */
 function validateForm() {
   const numberCommentsInput = document.getElementById("number-of-comments").value;
   const errorSpan = document.getElementById("error-message");
@@ -32,6 +23,10 @@ function validateForm() {
   }
 }
 
+/** 
+ * Creates an html comment element.
+ * @param {Comment} The comment to be displayed.
+ */
 function createCommentElement(comment) {
   let commentElement = document.createElement("div");
 
@@ -57,17 +52,16 @@ function createCommentElement(comment) {
 
   return commentElement;
 }
+
 /**
- * Gets comments for the page.
+ * Gets comments for the page based on user inputted number of comments, fills map with comment pins.
  */
 function getComments() {
-  const commentsContainer = document.getElementById("comments-container");
-  commentsContainer.innerText = "";
-  let buttonDiv = document.getElementById("delete");
-  buttonDiv.innerText = "";
+  clearComments();
+  let buttonDiv = document.getElementById("delete-button");
+  let commentsContainer = document.getElementById("comments-container");
   const numberCommentsInput = document.getElementById("number-of-comments").value;
   fetch("/data?number=" + numberCommentsInput).then(response => response.json()).then((comments) => {
-    const commentsContainer = document.getElementById("comments-container");
      comments.forEach(c => {
         let comment = createCommentElement(c);
         commentsContainer.appendChild(comment);
@@ -87,17 +81,29 @@ function getComments() {
   fillMap();
 }
 
+/** 
+ * Clears all comments off the display.
+ */
 function clearComments() {
   const commentsContainer = document.getElementById("comments-container");
   commentsContainer.innerText = "";
-  let buttonDiv = document.getElementById("delete");
+  let buttonDiv = document.getElementById("delete-button");
   buttonDiv.innerText = "";  
 }
+
+/** 
+ * Deletes all comments from the backend, reloads the page.
+ */
 function deleteComments() {
   fetch("/delete-data", {method: "POST"});
   window.location.reload();
 }
 
+/** 
+ * Creates a timestamp string for a given comment
+ * @param {comment} The comment to be displayed.
+ * @return {string} The timestamp string for the comment.
+ */
 function getTimeStamp(comment) {
   const timeSinceLastUpdated = ((new Date()).getTime() - comment.timestamp)/1000; 
   const seconds = (timeSinceLastUpdated).toFixed(0);
@@ -125,6 +131,9 @@ function getTimeStamp(comment) {
   }
 }
 
+/** 
+ * Renders the comment form based on the user's login status.
+ */
 function renderForm() {
   let commentForm = document.getElementById("comment-form");
   let authDiv = document.getElementById("auth-message");
@@ -132,25 +141,11 @@ function renderForm() {
   .then(res => {
     if (res.isLoggedIn) {
       commentForm.style.display = "block";
-      let authMessage = document.createElement("p");
-      let authLink = document.createElement("a");
-      authLink.innerText = "here";
-      authLink.href = res.url;
-      authMessage.appendChild(document.createTextNode("Logout "));
-      authMessage.appendChild(authLink);
-      authMessage.appendChild(document.createTextNode("."));
-      authDiv.appendChild(authMessage);
+      authDiv.appendChild(createLoggedInAuthMessage(res.url));
     }
     else {
       commentForm.style.display = "none";
-      let authMessage = document.createElement("p");
-      let authLink = document.createElement("a");
-      authLink.innerText = "here";
-      authLink.href = res.url;
-      authMessage.appendChild(document.createTextNode("Login "));
-      authMessage.appendChild(authLink);
-      authMessage.appendChild(document.createTextNode(" to leave comments."));
-      authDiv.appendChild(authMessage);
+      authDiv.appendChild(createLoggedOutAuthMessage(res.url));
     }
   });
   if (navigator.geolocation) {
@@ -161,10 +156,43 @@ function renderForm() {
   }
 }
 
+/**
+ * Creates and returns the authMessage if user is logged in.
+ * @return {Document Element} Mesasge for logged in users.
+ */
+function createLoggedInAuthMessage(loginUrl) {
+  let authMessage = document.createElement("p");
+  let authLink = document.createElement("a");
+  authLink.innerText = "here";
+  authLink.href = loginUrl;
+  authMessage.appendChild(document.createTextNode("Logout "));
+  authMessage.appendChild(authLink);
+  authMessage.appendChild(document.createTextNode("."));
+  return authMessage;
+}
+
+/**
+ * Creates and returns the authMessage if user is logged out.
+ * @return {Document Element} Mesasge for logged out users.
+ */
+function createLoggedOutAuthMessage(logoutUrl) {
+  let authMessage = document.createElement("p");
+  let authLink = document.createElement("a");
+  authLink.innerText = "here";
+  authLink.href = logoutUrl;
+  authMessage.appendChild(document.createTextNode("Login "));
+  authMessage.appendChild(authLink);
+  authMessage.appendChild(document.createTextNode(" to leave comments."));
+  return authMessage;
+}
+
 let map; 
 
+/** 
+ * Creates the default map, with a pin for my hometown.
+ */
 function makeMap() {
-  map = new google.maps.Map(document.getElementById("map"), {
+  map = new google.maps.Map(document.getElementById("map-container"), {
     center: {lat: 40.7128, lng: -98.006},
     zoom: 4
   });
@@ -194,7 +222,12 @@ function makeMap() {
 let markers = [];
 let marker;
 
-function addPin(comment, time, i) {
+/** 
+ * Creates and drops a pin and info window for a given comment
+ * @param {comment} The comment to be displayed.
+ * @param {time} The time delay for animating the pin drop.
+ */
+function addPin(comment, time) {
   setTimeout(function() {
     marker = new google.maps.Marker({
       position: {
@@ -215,9 +248,12 @@ function addPin(comment, time, i) {
       marker.setAnimation(google.maps.Animation.BOUNCE);
         setTimeout(function() { marker.setAnimation(null); }, 600);
       });
-  }, time * i); 
+  }, time); 
 }
 
+/** 
+ * Returns the map to its default state.
+ */
 function emptyMap() {
   for (let i = 0; i < markers.length; i++) {
     markers[i].setMap(null);
@@ -225,12 +261,15 @@ function emptyMap() {
   markers = [];   
 }
 
+/** 
+ * Clears map and renders pins for requested comments.
+ */
 function fillMap() {  
   emptyMap();
   const numberCommentsInput = document.getElementById("number-of-comments").value;
     fetch("/data?number=" + numberCommentsInput).then(response => response.json()).then((comments) => {
       comments.forEach((c, i) => {
-        addPin(c, 1000, i);
+        addPin(c, 500 * i);
       });
     });
 }

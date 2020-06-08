@@ -1,7 +1,7 @@
 
 /** 
  * Validates the user's inputted number of comments to be displayed, called on input.
- * @return {boolean} Whether user input was a valid, postive integer.
+ * @return {boolean} Whether user input was a valid, positive integer.
  */
 function validateForm() {
   const numberCommentsInput = document.getElementById("number-of-comments").value;
@@ -157,7 +157,7 @@ function renderForm() {
 }
 
 /**
- * Creates and returns the auth message if user is logged in.
+ * Creates and returns the authMessage if user is logged in.
  * @return {Document Element} Mesasge for logged in users.
  */
 function createLoggedInAuthMessage(loginUrl) {
@@ -172,7 +172,7 @@ function createLoggedInAuthMessage(loginUrl) {
 }
 
 /**
- * Creates and returns the auth message if user is logged out.
+ * Creates and returns the authMessage if user is logged out.
  * @return {Document Element} Mesasge for logged out users.
  */
 function createLoggedOutAuthMessage(logoutUrl) {
@@ -225,7 +225,7 @@ let marker;
 /** 
  * Creates and drops a pin and info window for a given comment
  * @param {comment} The comment to be displayed.
- * @param {comment} The time delay for animating the pin drop.
+ * @param {time} The time delay for animating the pin drop.
  */
 function addPin(comment, time) {
   setTimeout(function() {

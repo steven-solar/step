@@ -64,6 +64,68 @@ public final class FindMeetingQuery {
     return mergedTimes;
   }
 
+  public boolean hasOptionalAttendees(Event event, MeetingRequest request) {
+    return Collections.disjoint(event.getAttendees(), request.getAttendees()) 
+        && !Collections.disjoint(event.getAttendees(), request.getOptionalAttendees());
+  }
+
+  public Collection<String> getIntersection(Collection<String> a, Collection<String> b) {
+    Collection<String> intersection = new ArrayList<>();
+    intersection.addAll(a);
+    intersection.retainAll(b);
+    return intersection;
+  }
+
+  public Collection<Event> getOptionalOnlyEvents(Collection<Event> events, MeetingRequest request) {
+    Collection<Event> optionalOnlyEvents = new ArrayList<>();
+    for (Event e : events) {
+      Collection<String> optionalAttendees = new ArrayList<>();
+      if (hasOptionalAttendees(e, request)) {
+            optionalAttendees = getIntersection(e.getAttendees(), request.getOptionalAttendees());
+            Event optionalEvent = new Event(e.getTitle(), e.getWhen(), optionalAttendees);
+            optionalOnlyEvents.add(optionalEvent);
+          }
+    }
+    return optionalOnlyEvents;
+  }
+
+  public int getUnavailable(TimeRange range, Collection<Event> events) {
+    int numUnavailable = 0;
+    for (Event e : events) {
+      if (e.getWhen().overlaps(range)) {
+        numUnavailable += e.getAttendees().size();
+      }
+    }
+    return numUnavailable;
+  }
+
+  public TimeAndUnavailable optimalSubRange(TimeRange range, Collection<Event> events, MeetingRequest request) {
+    Collection<Event> optionalOnlyEvents = getOptionalOnlyEvents(events, request);
+
+    TimeRange currSubRange = TimeRange.fromStartDuration(range.start(), (int)request.getDuration());
+    int currUnavailable = 0;
+
+    TimeRange optimalSubRange = currSubRange;
+    int minUnavailable =  getUnavailable(currSubRange, optionalOnlyEvents);
+
+    for (Event e : optionalOnlyEvents) {
+      currSubRange = TimeRange.fromStartDuration(e.getWhen().start(), (int)request.getDuration());
+      currUnavailable = getUnavailable(currSubRange, optionalOnlyEvents);
+      if (currUnavailable < minUnavailable) {
+        minUnavailable = currUnavailable;
+        optimalSubRange = currSubRange;
+      }
+
+      currSubRange = TimeRange.fromStartDuration(e.getWhen().end(), (int)request.getDuration());
+      currUnavailable = getUnavailable(currSubRange, optionalOnlyEvents);
+      if (currUnavailable < minUnavailable) {
+        minUnavailable = currUnavailable;
+        optimalSubRange = currSubRange;
+      }
+    }
+    return new TimeAndUnavailable(optimalSubRange, minUnavailable);
+  }
+
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Collection<TimeRange> mergedTimes = mergeTimes(events, request);
     Collection<TimeRange> availableTimes = new ArrayList<>();
@@ -80,6 +142,23 @@ public final class FindMeetingQuery {
     if (end - start >= request.getDuration()) {
       availableTimes.add(TimeRange.fromStartEnd(start, end, true));
     }
-    return availableTimes;
+
+    Collection<TimeRange> optimalTimes = new ArrayList<>();
+    int minUnavailable = Integer.MAX_VALUE;
+    for (TimeRange t : availableTimes) {
+      TimeAndUnavailable optimal = optimalSubRange(t, events, request);
+      if (optimal.getUnavailable() < minUnavailable) {
+        minUnavailable = optimal.getUnavailable();
+      }
+    }
+
+    for (TimeRange t : availableTimes) {
+      TimeAndUnavailable optimal = optimalSubRange(t, events, request);
+      if (optimal.getUnavailable() == minUnavailable) {
+        optimalTimes.add(optimal.getRange());
+      }
+    }
+
+    return optimalTimes;
   }
 }

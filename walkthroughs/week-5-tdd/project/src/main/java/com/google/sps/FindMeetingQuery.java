@@ -26,10 +26,16 @@ import java.util.Comparator;
 
 public final class FindMeetingQuery {
 
-  public Collection<TimeRange> mergeTimes(Collection<Event> events, MeetingRequest request) {
+  /**
+   * This method merges together the Event's TimeRanges as a helper to our query function.
+   * @param events This is a list of all the Events throughout the day.
+   * @param request This is the original MeetingRequest we are trying to eventually satisfy.
+   * @return Collection<TimeRange> This returns the TimeRange list, with overlapping intervals merged together
+   */
+  private Collection<TimeRange> mergeTimes(Collection<Event> events, MeetingRequest request) {
     List<String> requestAttendees = new ArrayList(request.getAttendees());
     List<TimeRange> mergedTimes = new ArrayList<TimeRange>();
-    ArrayList<Event> eventList = new ArrayList(events);
+    List<Event> eventList = new ArrayList(events);
 
     if (eventList.size() == 0) {
       return mergedTimes;

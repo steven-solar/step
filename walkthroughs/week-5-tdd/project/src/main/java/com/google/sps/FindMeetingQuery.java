@@ -65,11 +65,24 @@ public final class FindMeetingQuery {
     return mergedTimes;
   }
 
+  /**
+   * This method checks if an event attendees who are optional in the request, and no attendees who are 
+   * mandatory in the request.
+   * @param event This is the Event being checked.
+   * @param request This is the MeetingRequest being checked.
+   * @return boolean This returns true if there are optional attendees at the meeting, but no mandatory ones.
+   */
   public boolean hasNoMandatoryOnlyOptionalAttendees(Event event, MeetingRequest request) {
     return Collections.disjoint(event.getAttendees(), request.getAttendees()) 
         && !Collections.disjoint(event.getAttendees(), request.getOptionalAttendees());
   }
 
+  /**
+   * This method get the intersection of two sets
+   * @param a This is the first set of strings
+   * @param b This is the second set of strings
+   * @return Collection<String> This returns the intersection of the two sets (a and b).
+   */
   public Collection<String> getIntersection(Collection<String> a, Collection<String> b) {
     Collection<String> intersection = new ArrayList<>();
     intersection.addAll(a);
@@ -77,19 +90,15 @@ public final class FindMeetingQuery {
     return intersection;
   }
 
-  public Collection<Event> getOptionalOnlyEvents(Collection<Event> events, MeetingRequest request) {
-    Collection<Event> optionalOnlyEvents = new ArrayList<>();
-    for (Event e : events) {
-      Collection<String> optionalAttendees = new ArrayList<>();
-      if (hasNoMandatoryOnlyOptionalAttendees(e, request)) {
-            optionalAttendees = getIntersection(e.getAttendees(), request.getOptionalAttendees());
-            Event optionalEvent = new Event(e.getTitle(), e.getWhen(), optionalAttendees);
-            optionalOnlyEvents.add(optionalEvent);
-          }
-    }
-    return optionalOnlyEvents;
-  }
-
+  /**
+   * This returns only the events that overlap with the given TimeRange and have no mandatory (and >= 1 optional) 
+   * attendees, with their attendee list updated to contain only optional attendees 
+   * (all non-optional are thrown out, and there are no mandatory as these are filtered out).
+   * @param events This is a list of all the Events throughout the day.
+   * @param range This is the TimeRange all events must overlap with, or they're filtered out.
+   * @param request This is the original MeetingRequest we are trying to eventually satisfy.
+   * @return Collection<Event> This returns the updated Event list, with "optional" events in the TimeRange, with updated attendees.
+   */
   public Collection<Event> getOptionalOnlyEventsInRange(TimeRange range, Collection<Event> events, MeetingRequest request) {
     Collection<Event> optionalOnlyEvents = new ArrayList<>();
     for (Event e : events) {
@@ -103,33 +112,64 @@ public final class FindMeetingQuery {
     return optionalOnlyEvents;
   }
 
+  /**
+   * This returns only the events with no mandatory (and >= 1 optional) attendees, with their attendee list updated
+   * to contain only optional attendees (all non-optional are thrown out, and there are no mandatory as these are filtered out).
+   * @param events This is a list of all the Events throughout the day.
+   * @param request This is the original MeetingRequest we are trying to eventually satisfy.
+   * @return Collection<Event> This returns the updated Event list, with only "optional" events, and their optional attendees.
+   */
+  public Collection<Event> getOptionalOnlyEvents(Collection<Event> events, MeetingRequest request) {
+    return getOptionalOnlyEventsInRange(TimeRange.WHOLE_DAY, events, request);
+  }
+
+  /**
+   * This method updates the given slotsPQ (ordered by min unavailable) with the optimal subslots of the give TimeRange, 
+   * and the number of unavailable optional attendees in those ranges.
+   * @param events This is a list of all the Events throughout the day.
+   * @param request This is the original MeetingRequest we are trying to eventually satisfy.
+   */
   public void timeSlotSubranges(PriorityQueue<TimeRangeAndUnavailable> slotsPQ, TimeRange range, Collection<Event> events, MeetingRequest request) {
     Collection<Event> optionalOnlyEvents = getOptionalOnlyEventsInRange(range, events, request);
+
+    //No conflicts in this range, the whole range has 0 optional attendees unavailable
     if (optionalOnlyEvents.size() == 0) {
       slotsPQ.add(new TimeRangeAndUnavailable(range, 0));
       return;
     }
 
+    //Add all event start and end times (object contains Event, and whether we should look at start or end) to PQ.
     PriorityQueue<EventAndTime> eventTimesPQ = new PriorityQueue<>(5, EventAndTime.ORDER);
     for (Event e : optionalOnlyEvents) {
       eventTimesPQ.add(new EventAndTime(e, true));
       eventTimesPQ.add(new EventAndTime(e, false));
     }
-    Set<EventAndTime> runningEvents = new HashSet<>();
+
     int numUnavailable = 0;
     EventAndTime one = eventTimesPQ.poll();
-    runningEvents.add(one);
     numUnavailable += one.getEvent().getAttendees().size();
+
     while (!eventTimesPQ.isEmpty()) {
       EventAndTime two = eventTimesPQ.poll();
+
+      //Is the range long enough to hold the requested meeting?
       if (two.getTime() - one.getTime() >= request.getDuration()) {
         slotsPQ.add(new TimeRangeAndUnavailable(TimeRange.fromStartEnd(one.getTime(), two.getTime(), false), numUnavailable));
       } 
-      if (two.isStart()) numUnavailable += two.getEvent().getAttendees().size();
-      else numUnavailable -= two.getEvent().getAttendees().size();
-      one = two;
+
+      //If the second time starts a new event, add its attendees to numUnavailable.
+      if (two.isStart()) {
+        numUnavailable += two.getEvent().getAttendees().size();
       }
+
+      //If the second time ends an event, remove its attendees from numUnavailable.
+      else {
+        numUnavailable -= two.getEvent().getAttendees().size();
+      }
+
+      one = two;
     }
+  }
 
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Collection<TimeRange> mergedTimes = mergeTimes(events, request);
@@ -152,26 +192,36 @@ public final class FindMeetingQuery {
     PriorityQueue<TimeRangeAndUnavailable> slotsPQ = new PriorityQueue<>(5, TimeRangeAndUnavailable.ORDER_BY_UNAVAILABLE);
     Collection<Event> optionalOnlyEvents = getOptionalOnlyEvents(events, request);
     
+    //If no optional events, just return open slots. Nothing to optimize for.
     if (optionalOnlyEvents.size() == 0) {
       return availableTimes;
     }
-
+    
+    //Find optimal subranges for all available ranges.
     for (TimeRange t : availableTimes) {
       timeSlotSubranges(slotsPQ, t, optionalOnlyEvents, request);
     }
     
     int numOptional = request.getOptionalAttendees().size();
+
+    //If no optimal subranges are found, just return open slots. No way to optimize.
     if (slotsPQ.isEmpty()) {
       return availableTimes;
     }
     else {
       int bestUnavailable = slotsPQ.peek().getUnavailable();
+
+      //If the best we can do is that all optional attendees are unavailable, no way to optimize.
       if (bestUnavailable == numOptional) {
         return availableTimes;
       }
+
+      //Edge case: If no mandatory and 2 optional attendees and best we can do is 1 free at a time, no meeting.
       if (request.getAttendees().size() == 0 && numOptional == 2 && bestUnavailable >= 1) {
         return new ArrayList<TimeRange>();
       }
+
+      //Add all equivalently "good" subranges to our answer.
       while (!slotsPQ.isEmpty() && slotsPQ.peek().getUnavailable() == bestUnavailable) {
         optimalTimes.add(slotsPQ.poll().getTimeRange());
       }

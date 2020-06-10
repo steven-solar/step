@@ -104,10 +104,10 @@ public final class FindMeetingQuery {
     for (Event e : events) {
       Collection<String> optionalAttendees = new ArrayList<>();
       if (hasNoMandatoryOnlyOptionalAttendees(e, request) && range.overlaps(e.getWhen())) {
-            optionalAttendees = getIntersection(e.getAttendees(), request.getOptionalAttendees());
-            Event optionalEvent = new Event(e.getTitle(), e.getWhen(), optionalAttendees);
-            optionalOnlyEvents.add(optionalEvent);
-          }
+        optionalAttendees = getIntersection(e.getAttendees(), request.getOptionalAttendees());
+        Event optionalEvent = new Event(e.getTitle(), e.getWhen(), optionalAttendees);
+        optionalOnlyEvents.add(optionalEvent);
+      }
     }
     return optionalOnlyEvents;
   }
@@ -170,6 +170,7 @@ public final class FindMeetingQuery {
       one = two;
     }
   }
+
 
   public Collection<TimeRange> query(Collection<Event> events, MeetingRequest request) {
     Collection<TimeRange> mergedTimes = mergeTimes(events, request);

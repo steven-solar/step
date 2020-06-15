@@ -124,56 +124,11 @@ public final class FindMeetingQuery {
   }
 
   /**
-   * This method updates the given slotsPQ (ordered by min unavailable) with the optimal subslots of the give TimeRange, 
-   * and the number of unavailable optional attendees in those ranges.
-   * @param events This is a list of all the Events throughout the day.
-   * @param request This is the original MeetingRequest we are trying to eventually satisfy.
+   * This method gets all the unavailability slots throughout a day.
+   * @param optionalOnlyEvents represents all the optional only events throughout the dat
+   * @param request is the original MeetingRequest object
+   * @return Collection<TimeRangeAndUnavailable> is the entire day broken into slots in which unavailability is constant.
    */
-  public void timeSlotSubranges(PriorityQueue<TimeRangeAndUnavailable> slotsPQ, TimeRange range, Collection<Event> events, MeetingRequest request) {
-    Collection<Event> optionalOnlyEvents = getOptionalOnlyEventsInRange(range, events, request);
-
-    //No conflicts in this range, the whole range has 0 optional attendees unavailable
-    if (optionalOnlyEvents.size() == 0) {
-      slotsPQ.add(new TimeRangeAndUnavailable(range, 0));
-      return;
-    }
-
-    //Add all event start and end times (object contains Event, and whether we should look at start or end) to PQ.
-    PriorityQueue<EventAndTime> eventTimesPQ = new PriorityQueue<>(5, EventAndTime.ORDER);
-    for (Event e : optionalOnlyEvents) {
-      eventTimesPQ.add(new EventAndTime(e, true));
-      eventTimesPQ.add(new EventAndTime(e, false));
-    }
-
-    int numUnavailable = 0;
-    EventAndTime one = eventTimesPQ.poll();
-    numUnavailable += one.getEvent().getAttendees().size();
-
-    while (!eventTimesPQ.isEmpty()) {
-      EventAndTime two = eventTimesPQ.poll();
-
-      //Is the range long enough to hold the requested meeting?
-      if (two.getTime() - one.getTime() >= request.getDuration()) {
-        slotsPQ.add(new TimeRangeAndUnavailable(TimeRange.fromStartEnd(one.getTime(), two.getTime(), false), numUnavailable));
-      } 
-
-      //If the second time starts a new event, add its attendees to numUnavailable.
-      if (two.isStart()) {
-        numUnavailable += two.getEvent().getAttendees().size();
-      }
-
-      //If the second time ends an event, remove its attendees from numUnavailable.
-      else {
-        numUnavailable -= two.getEvent().getAttendees().size();
-      }
-
-      one = two;
-    }
-    if (one.getTime() != TimeRange.END_OF_DAY) {
-      slotsPQ.add(new TimeRangeAndUnavailable(TimeRange.fromStartEnd(one.getTime(), TimeRange.END_OF_DAY, true), 0));
-    }
-  }
-
   public Collection<TimeRangeAndUnavailable> getAllUnavailability(Collection<Event> optionalOnlyEvents, MeetingRequest request) {
     List<TimeRangeAndUnavailable> unavailability = new ArrayList<>();
     PriorityQueue<EventAndTime> eventTimesPQ = new PriorityQueue<>(5, EventAndTime.ORDER);
@@ -217,6 +172,13 @@ public final class FindMeetingQuery {
     return unavailability;
   }
 
+  /**
+   * This method retrieves a list of the optimal free times
+   * @param openRanges is the list of free times, based on mandatory attendees
+   * @param events is all the events throughout the day
+   * @param request is the original MeetingRequest object.
+   * @return Collection<TimeRangeAndUnavailable> is a list of the optimal timeranges, and their associated unavailability of optional attendees.
+   */
   public Collection<TimeRangeAndUnavailable> optimalTimeAndUnavailables(Collection<TimeRange> openRanges, Collection<Event> events, MeetingRequest request) {
     List<TimeRange> openRangeList = new ArrayList(openRanges);
     Collection<Event> optionalOnlyEvents = getOptionalOnlyEvents(events, request);
@@ -233,7 +195,8 @@ public final class FindMeetingQuery {
       }
       if (uIdx >= unavailability.size()) break;
 
-      //If unavail starts on or before, ends on or after
+      //If unavail starts on or before, ends on or after. TimeRange is just the open one dictated by mandatory attendees.
+      //If end together, move to next unavailability range. 
       if (unavailability.get(uIdx).getTimeRange().startsOnOrBeforeEndsOnOrAfter(openRangeList.get(i)) 
         && unavailability.get(uIdx).getTimeRange().end() - openRangeList.get(i).start() >= request.getDuration()) {
         if (unavailability.get(uIdx).getUnavailable() == minUnavailability) {
@@ -244,13 +207,15 @@ public final class FindMeetingQuery {
           minUnavailability = unavailability.get(uIdx).getUnavailable();
           optimalTimes.add(new TimeRangeAndUnavailable(openRangeList.get(i), minUnavailability));
         }
+
         if (unavailability.get(uIdx).getTimeRange().end() == openRangeList.get(i).end()) {
           uIdx++;
         }
         continue;
       }
 
-      //If unavail start on or before, but ends during
+      //If unavail start on or before, but ends during, TimeRange goes from start of open and ends with the unavailability range.
+      //We move to the next unavailability range
       if (unavailability.get(uIdx).getTimeRange().overlapsBefore(openRangeList.get(i)) 
       && unavailability.get(uIdx).getTimeRange().end() - openRangeList.get(i).start() >= request.getDuration()) {
         System.out.println(unavailability.get(uIdx).getTimeRange().end() - openRangeList.get(i).start());
@@ -269,7 +234,7 @@ public final class FindMeetingQuery {
       }
       if (uIdx >= unavailability.size()) break;
 
-      //If unavail starts during, ends during
+      //If unavailability slot starts during and ends during, it defines the range of the slot and we move to the next slot
       while (uIdx < unavailability.size() 
       && openRangeList.get(i).contains(unavailability.get(uIdx).getTimeRange())) {
         if (unavailability.get(uIdx).getTimeRange().duration() >= request.getDuration()) {
@@ -286,7 +251,8 @@ public final class FindMeetingQuery {
       }
       if (uIdx >= unavailability.size()) break;
 
-      //If unavail starts during, ends on or after
+      //If unavail starts during and ends on or after, time range starts at beginning of unavailability slot, and ends at the end of the open slot
+      //We move to the next unavailability slot only if they end at same time
       if (unavailability.get(uIdx).getTimeRange().startsDuringEndsOnOrAfter(openRangeList.get(i)) 
       && unavailability.get(uIdx).getTimeRange().end() - openRangeList.get(i).start() >= request.getDuration()) {
         if (unavailability.get(uIdx).getUnavailable() == minUnavailability) {
@@ -326,21 +292,6 @@ public final class FindMeetingQuery {
     }
 
     List<TimeRangeAndUnavailable> optimalTimeAndUnavailables = new ArrayList(optimalTimeAndUnavailables(availableTimes, events, request));
-
-    // = new AList<>()
-    //PriorityQueue<TimeRangeAndUnavailable> slotsPQ = new PriorityQueue<>(5, TimeRangeAndUnavailable.ORDER_BY_UNAVAILABLE);
-    //Collection<Event> optionalOnlyEvents = getOptionalOnlyEvents(events, request);
-    
-    //If no optional events, just return open slots. Nothing to optimize for.
-    // if (optionalOnlyEvents.size() == 0) {
-    //   return availableTimes;
-    // }
-    
-    //Find optimal subranges for all available ranges.
-    // for (TimeRange t : availableTimes) {
-    //   timeSlotSubranges(slotsPQ, t, optionalOnlyEvents, request);
-    // }
-    
     int numOptional = request.getOptionalAttendees().size();
 
     //If no optimal subranges are found, just return open slots. No way to optimize.
@@ -360,17 +311,18 @@ public final class FindMeetingQuery {
         return new ArrayList<TimeRange>();
       }
 
-    //   //Add all equivalently "good" subranges to our answer.
-    //   while (!slotsPQ.isEmpty() && slotsPQ.peek().getUnavailable() == bestUnavailable) {
-    //     optimalTimes.add(slotsPQ.poll().getTimeRange());
-    //   }
     }
     List<TimeRange> optimalTimes = new ArrayList<>();
-    for (TimeRangeAndUnavailable t : optimalTimeAndUnavailables){
-      System.out.println(t);
-      if (t.getTimeRange().duration() >= request.getDuration()) optimalTimes.add(t.getTimeRange());
+    for (TimeRangeAndUnavailable t : optimalTimeAndUnavailables) {
+      if (t.getTimeRange().duration() >= request.getDuration()) {
+        optimalTimes.add(t.getTimeRange());
+      }
     } 
-    if (request.getAttendees().size() > 0 && optimalTimes.isEmpty()) return availableTimes;
+
+    if (request.getAttendees().size() > 0 && optimalTimes.isEmpty()) {
+      return availableTimes;
+    }
+
     return optimalTimes;
   }
 }

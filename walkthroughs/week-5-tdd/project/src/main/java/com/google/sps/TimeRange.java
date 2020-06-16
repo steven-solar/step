@@ -79,7 +79,7 @@ public final class TimeRange {
    * Checks if one range starts on or before the other, and ends at the same time or after it.
    */
   public boolean startsDuringEndsOnOrAfter(TimeRange other) {
-    return (this.start > other.start) && (this.end() >= other.end());  
+    return (this.start > other.start) && (this.end() >= other.end() && this.overlaps(other));  
   }
 
   /**
@@ -93,7 +93,7 @@ public final class TimeRange {
    * Checks if one range starts before the other, and ends during it.
    */
   public boolean overlapsBefore(TimeRange other) {
-    return (this.start < other.start) && (this.end() < other.end());  
+    return (this.start < other.start) && (this.end() < other.end() && this.overlaps(other));  
   }
 
   /**

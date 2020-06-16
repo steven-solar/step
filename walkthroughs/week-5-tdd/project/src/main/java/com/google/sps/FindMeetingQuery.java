@@ -66,7 +66,7 @@ public final class FindMeetingQuery {
   }
 
   /**
-   * This method checks if an event attendees who are optional in the request, and no attendees who are 
+   * This method checks if an event has attendees who are optional in the request, and no attendees who are 
    * mandatory in the request.
    * @param event This is the Event being checked.
    * @param request This is the MeetingRequest being checked.
@@ -171,7 +171,149 @@ public final class FindMeetingQuery {
 
     return unavailability;
   }
+  
+  /**
+   * This method returns true if the conditions satisfy case one: the unavailability range begins before (or at the same time) 
+   * as the openRange, and ends after (or at the same time) as the openRange. And, the openRange is long enough to host a meeting.
+   * @param unavailability is the current TimeRangeAndUnavailable slot we're evaluating
+   * @param openRange is the current TimeRange we're evaluating
+   * @param request is the MeetingRequest we are trying to satisfy
+   */
+  public boolean isCaseOne(TimeRangeAndUnavailable unavailability, TimeRange openRange, MeetingRequest request) {
+    return unavailability.getTimeRange().startsOnOrBeforeEndsOnOrAfter(openRange) && openRange.duration() >= request.getDuration();
+  }
 
+  /**
+   * This method handles case one, updating optimalTimes appropriately.
+   * In this case, our range is just the open one dictated by mandatory attendees. If they end together, move to next unavailability range. 
+   * @param optimalTimes is the running list of optimal TimeRangeAndUnavailables
+   * @param unavailability is the current TimeRangeAndUnavailable slot we're evaluating
+   * @param openRange is the current open TimeRange we're evaluating (dictated by mandatory attendees)
+   * @param minUnavailability is the minimum unavailable optional attendees so far
+   * @param uIdx is the current index in the unavailability list
+   * @return int[] holds the updated minUnavailability and uIdx
+   */
+  public int[] handleCaseOne(Collection<TimeRangeAndUnavailable> optimalTimes, TimeRangeAndUnavailable unavailability, TimeRange openRange, int minUnavailability, int uIdx) {
+    if (unavailability.getUnavailable() == minUnavailability) {
+      optimalTimes.add(new TimeRangeAndUnavailable(openRange, minUnavailability));
+    }
+    if (unavailability.getUnavailable() < minUnavailability) {
+      optimalTimes.clear();
+      minUnavailability = unavailability.getUnavailable();
+      optimalTimes.add(new TimeRangeAndUnavailable(openRange, minUnavailability));
+    }
+
+    if (unavailability.getTimeRange().end() == openRange.end()) {
+      uIdx++;
+    }
+    return new int[] {minUnavailability, uIdx};
+  }
+
+  /**
+   * This method returns true if the conditions satisfy case two: the unavailability range overlaps with the openRange, and begins and ends before
+   * the openRange. The range defined by the beginning of the openRange and the end of the unavailability range should be long enough to host a meeting.
+   * @param unavailability is the current TimeRangeAndUnavailable slot we're evaluating
+   * @param openRange is the current TimeRange we're evaluating
+   * @param request is the MeetingRequest we are trying to satisfy
+   */
+  public boolean isCaseTwo(TimeRangeAndUnavailable unavailability, TimeRange openRange, MeetingRequest request) {
+    return unavailability.getTimeRange().overlapsBefore(openRange) && unavailability.getTimeRange().end() - openRange.start() >= request.getDuration();
+  }
+
+  /**
+   * This method handles case two, updating optimalTimes appropriately. 
+   * In this case, our range spans from the beginning of openRange to the end of the unavailability range. Move to next unavailability range. 
+   * @param optimalTimes is the running list of optimal TimeRangeAndUnavailables
+   * @param unavailability is the current TimeRangeAndUnavailable slot we're evaluating
+   * @param openRange is the current open TimeRange we're evaluating (dictated by mandatory attendees)
+   * @param minUnavailability is the minimum unavailable optional attendees so far
+   * @param uIdx is the current index in the unavailability list
+   * @return int[] holds the updated minUnavailability and uIdx
+   */
+  public int[] handleCaseTwo(Collection<TimeRangeAndUnavailable> optimalTimes, TimeRangeAndUnavailable unavailability, TimeRange openRange, int minUnavailability, int uIdx) {
+    if (unavailability.getUnavailable() == minUnavailability) {
+      optimalTimes.add(new TimeRangeAndUnavailable(TimeRange.fromStartEnd(openRange.start(), unavailability.getTimeRange().end(), false), minUnavailability));
+    }
+    if (unavailability.getUnavailable() < minUnavailability) {
+      optimalTimes.clear();
+      minUnavailability = unavailability.getUnavailable();
+      optimalTimes.add(new TimeRangeAndUnavailable(TimeRange.fromStartEnd(openRange.start(), unavailability.getTimeRange().end(), false), minUnavailability));
+    }
+    uIdx++;
+    return new int[] {minUnavailability, uIdx};
+  }
+
+  /**
+   * This method returns true if the conditions satisfy case three: the unavailability range is contained within the openRange and uIdx is in bounds. 
+   * @param unavailability is the list of TimeRangeAndUnavailable objects we're evaluating
+   * @param openRange is the current TimeRange we're evaluating
+   * @param uIdx is our current index in the unavailibility list
+   */
+  public boolean isCaseThree(List<TimeRangeAndUnavailable> unavailability, TimeRange openRange, int uIdx) {
+    return uIdx < unavailability.size() && openRange.contains(unavailability.get(uIdx).getTimeRange());
+  }
+
+  /**
+   * This method handles case three, updating optimalTimes appropriately.
+   * In this case, our range is just the unavailability range, as it is completely contained within the openRange. Mve to next unavailability range. 
+   * @param optimalTimes is the running list of optimal TimeRangeAndUnavailables
+   * @param unavailability is the current TimeRangeAndUnavailable slot we're evaluating
+   * @param openRange is the current open TimeRange we're evaluating (dictated by mandatory attendees)
+   * @param minUnavailability is the minimum unavailable optional attendees so far
+   * @param uIdx is the current index in the unavailability list
+   * @return int[] holds the updated minUnavailability and uIdx
+   */
+  public int[] handleCaseThree(Collection<TimeRangeAndUnavailable> optimalTimes, TimeRangeAndUnavailable unavailability, TimeRange openRange, MeetingRequest request, int minUnavailability, int uIdx) {
+    if (unavailability.getTimeRange().duration() >= request.getDuration()) {
+      if (unavailability.getUnavailable() == minUnavailability) {
+        optimalTimes.add(new TimeRangeAndUnavailable(unavailability.getTimeRange(), minUnavailability));
+      }
+      if (unavailability.getUnavailable() < minUnavailability) {
+        optimalTimes.clear();
+        minUnavailability = unavailability.getUnavailable();
+        optimalTimes.add(new TimeRangeAndUnavailable(unavailability.getTimeRange(), minUnavailability));
+      }
+    }
+    uIdx++;
+    return new int[] {minUnavailability, uIdx};
+  }
+
+  /**
+   * This method returns true if the conditions satisfy case four: the unavailability range begins during  
+   * as the openRange, and ends after (or at the same time) as the openRange. And, the openRange is long enough to host a meeting.
+   * @param unavailability is the current TimeRangeAndUnavailable slot we're evaluating
+   * @param openRange is the current TimeRange we're evaluating
+   * @param request is the MeetingRequest we are trying to satisfy
+   */
+  public boolean isCaseFour(TimeRangeAndUnavailable unavailability, TimeRange openRange, MeetingRequest request) {
+    return unavailability.getTimeRange().startsDuringEndsOnOrAfter(openRange) && openRange.end() - unavailability.getTimeRange().start() >= request.getDuration();
+  }
+
+  /**
+   * This method handles case four, updating optimalTimes appropriately. 
+   * In this case, our range spans from the beginning of the unavailability range to the end of openRange. If they end together, move to next unavailability range. 
+   * @param optimalTimes is the running list of optimal TimeRangeAndUnavailables
+   * @param unavailability is the current TimeRangeAndUnavailable slot we're evaluating
+   * @param openRange is the current open TimeRange we're evaluating (dictated by mandatory attendees)
+   * @param minUnavailability is the minimum unavailable optional attendees so far
+   * @param uIdx is the current index in the unavailability list
+   * @return int[] holds the updated minUnavailability and uIdx
+   */
+  public int[] handleCaseFour(Collection<TimeRangeAndUnavailable> optimalTimes, TimeRangeAndUnavailable unavailability, TimeRange openRange, int minUnavailability, int uIdx) {
+    if (unavailability.getUnavailable() == minUnavailability) {
+      optimalTimes.add(new TimeRangeAndUnavailable(TimeRange.fromStartEnd(unavailability.getTimeRange().start(), openRange.end(), false), minUnavailability));
+    }
+    if (unavailability.getUnavailable() < minUnavailability) {
+      optimalTimes.clear();
+      minUnavailability = unavailability.getUnavailable();
+      optimalTimes.add(new TimeRangeAndUnavailable(TimeRange.fromStartEnd(unavailability.getTimeRange().start(),openRange.end(), false), minUnavailability));
+    }
+    if (unavailability.getTimeRange().end() == openRange.end()) {
+      uIdx++;
+    }
+    return new int[] {minUnavailability, uIdx};
+  }
+  
   /**
    * This method retrieves a list of the optimal free times
    * @param openRanges is the list of free times, based on mandatory attendees
@@ -194,81 +336,32 @@ public final class FindMeetingQuery {
         uIdx++;
       }
       if (uIdx >= unavailability.size()) break;
-
-      //If unavail starts on or before, ends on or after. TimeRange is just the open one dictated by mandatory attendees.
-      //If end together, move to next unavailability range. 
-      if (unavailability.get(uIdx).getTimeRange().startsOnOrBeforeEndsOnOrAfter(openRangeList.get(i)) 
-        && unavailability.get(uIdx).getTimeRange().end() - openRangeList.get(i).start() >= request.getDuration()) {
-        if (unavailability.get(uIdx).getUnavailable() == minUnavailability) {
-          optimalTimes.add(new TimeRangeAndUnavailable(openRangeList.get(i), minUnavailability));
-        }
-        if (unavailability.get(uIdx).getUnavailable() < minUnavailability) {
-          optimalTimes.clear();
-          minUnavailability = unavailability.get(uIdx).getUnavailable();
-          optimalTimes.add(new TimeRangeAndUnavailable(openRangeList.get(i), minUnavailability));
-        }
-
-        if (unavailability.get(uIdx).getTimeRange().end() == openRangeList.get(i).end()) {
-          uIdx++;
-        }
+ 
+      if (isCaseOne(unavailability.get(uIdx), openRangeList.get(i), request)) {
+        int[] update = handleCaseOne(optimalTimes, unavailability.get(uIdx), openRangeList.get(i), minUnavailability, uIdx);
+        minUnavailability = update[0];
+        uIdx = update[1];
         continue;
       }
 
-      //If unavail start on or before, but ends during, TimeRange goes from start of open and ends with the unavailability range.
-      //We move to the next unavailability range
-      if (unavailability.get(uIdx).getTimeRange().overlapsBefore(openRangeList.get(i)) 
-      && unavailability.get(uIdx).getTimeRange().end() - openRangeList.get(i).start() >= request.getDuration()) {
-        System.out.println(unavailability.get(uIdx).getTimeRange().end() - openRangeList.get(i).start());
-        if (unavailability.get(uIdx).getUnavailable() == minUnavailability) {
-          optimalTimes.add(new TimeRangeAndUnavailable(TimeRange.fromStartEnd(
-              openRangeList.get(i).start(), unavailability.get(uIdx).getTimeRange().end(), false), minUnavailability));
-        }
-        if (unavailability.get(uIdx).getUnavailable() < minUnavailability) {
-          optimalTimes.clear();
-          minUnavailability = unavailability.get(uIdx).getUnavailable();
-          optimalTimes.add(new TimeRangeAndUnavailable(TimeRange.fromStartEnd(
-              openRangeList.get(i).start(), unavailability.get(uIdx).getTimeRange().end(), false), minUnavailability));
-
-        }
-        uIdx++;
+      if (isCaseTwo(unavailability.get(uIdx), openRangeList.get(i), request)) {
+        int[] update = handleCaseTwo(optimalTimes, unavailability.get(uIdx), openRangeList.get(i), minUnavailability, uIdx);
+        minUnavailability = update[0];
+        uIdx = update[1];
       }
       if (uIdx >= unavailability.size()) break;
 
-      //If unavailability slot starts during and ends during, it defines the range of the slot and we move to the next slot
-      while (uIdx < unavailability.size() 
-      && openRangeList.get(i).contains(unavailability.get(uIdx).getTimeRange())) {
-        if (unavailability.get(uIdx).getTimeRange().duration() >= request.getDuration()) {
-          if (unavailability.get(uIdx).getUnavailable() == minUnavailability) {
-            optimalTimes.add(new TimeRangeAndUnavailable(unavailability.get(uIdx).getTimeRange(), minUnavailability));
-          }
-          if (unavailability.get(uIdx).getUnavailable() < minUnavailability) {
-            optimalTimes.clear();
-            minUnavailability = unavailability.get(uIdx).getUnavailable();
-            optimalTimes.add(new TimeRangeAndUnavailable(unavailability.get(uIdx).getTimeRange(), minUnavailability));
-          }
-        }
-        uIdx++;
+      while (isCaseThree(unavailability, openRangeList.get(i), uIdx)) {
+        int[] update = handleCaseThree(optimalTimes, unavailability.get(uIdx), openRangeList.get(i), request, minUnavailability, uIdx);
+        minUnavailability = update[0];
+        uIdx = update[1];
       }
       if (uIdx >= unavailability.size()) break;
 
-      //If unavail starts during and ends on or after, time range starts at beginning of unavailability slot, and ends at the end of the open slot
-      //We move to the next unavailability slot only if they end at same time
-      if (unavailability.get(uIdx).getTimeRange().startsDuringEndsOnOrAfter(openRangeList.get(i)) 
-      && unavailability.get(uIdx).getTimeRange().end() - openRangeList.get(i).start() >= request.getDuration()) {
-        if (unavailability.get(uIdx).getUnavailable() == minUnavailability) {
-          optimalTimes.add(new TimeRangeAndUnavailable(TimeRange.fromStartEnd(
-              unavailability.get(uIdx).getTimeRange().start(), openRangeList.get(i).end(), false), minUnavailability));
-        }
-        if (unavailability.get(uIdx).getUnavailable() < minUnavailability) {
-          optimalTimes.clear();
-          minUnavailability = unavailability.get(uIdx).getUnavailable();
-          optimalTimes.add(new TimeRangeAndUnavailable(TimeRange.fromStartEnd(
-              unavailability.get(uIdx).getTimeRange().start(),openRangeList.get(i).end(), false), minUnavailability));
-
-        }
-        if (unavailability.get(uIdx).getTimeRange().end() == openRangeList.get(i).end()) {
-          uIdx++;
-        }
+      if (isCaseFour(unavailability.get(uIdx), openRangeList.get(i), request)) {
+        int[] update = handleCaseFour(optimalTimes, unavailability.get(uIdx), openRangeList.get(i), minUnavailability, uIdx);
+        minUnavailability = update[0];
+        uIdx = update[1];
       }
     }
     return optimalTimes;

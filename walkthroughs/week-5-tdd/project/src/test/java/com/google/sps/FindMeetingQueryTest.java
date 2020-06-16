@@ -13,7 +13,6 @@
 // limitations under the License.
 
 package com.google.sps;
-import java.io.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -336,9 +335,6 @@ public final class FindMeetingQueryTest {
 
   @Test
   public void optionalAttendeeNoAdjust() throws FileNotFoundException {
-      PrintStream originalOut = System.out;
-      System.setOut(new PrintStream("./debug.txt")); 
-      System.out.println("Optional No Adjust");
     // Add an optional attendee where meeting attendance would be impossible for him. Don't adjust scheduling.
     //
     // Events  : |--A--|     |----A----|
@@ -360,8 +356,7 @@ public final class FindMeetingQueryTest {
     Collection<TimeRange> actual = query.query(events, request);
     Collection<TimeRange> expected =
         Arrays.asList(TimeRange.fromStartDuration(TIME_0830AM, DURATION_30_MINUTES));
-    System.out.println("------------------");
-      System.setOut(originalOut);
+
     Assert.assertEquals(expected, actual);
   }
 
@@ -400,8 +395,8 @@ public final class FindMeetingQueryTest {
   public void allOptionalAttendeesNoRoom() {
     // Have only optional attendees, but not time slot that works.
     //
-    // Events  : |--A--|          |--A--|
-    //                      |--B--|           |--B--|
+    // Events  : |--A--|          |--A--------------|
+    //                 |----B-----|           
     // Day     : |----------------------------------|
     // Options :       |----|           |-----|
 
